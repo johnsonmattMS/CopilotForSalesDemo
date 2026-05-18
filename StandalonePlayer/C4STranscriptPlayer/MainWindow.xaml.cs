@@ -25,8 +25,9 @@ public partial class MainWindow : Window
 
     private void InitializeControls()
     {
+        var preferences = _windowSettings.LoadPlayerPreferences();
         EnvironmentUrlBox.Text = "https://org3c71a034.crm4.dynamics.com/";
-        VoicemeeterPathBox.Text = _windowSettings.LoadVoicemeeterBananaPath() ?? GetDefaultVoicemeeterBananaPath();
+        VoicemeeterPathBox.Text = preferences.VoicemeeterBananaPath ?? GetDefaultVoicemeeterBananaPath();
         ThemeBox.ItemsSource = _generator.ThemeOptions;
         ThemeBox.SelectedValue = "renewal-risk";
         ToneBox.ItemsSource = new[] { "balanced", "positive", "tense", "recovery" };
@@ -39,7 +40,7 @@ public partial class MainWindow : Window
             new ComboOption<PlaybackMode>("Seller only", PlaybackMode.SellerOnly),
             new ComboOption<PlaybackMode>("Customer only", PlaybackMode.CustomerOnly)
         };
-        PlaybackModeBox.SelectedIndex = 0;
+        SelectComboOptionByValue(PlaybackModeBox, preferences.PlaybackMode, PlaybackMode.Both);
         RoutingPresetBox.ItemsSource = new[]
         {
             new ComboOption<string>("Voicemeeter free two-speaker setup", "voicemeeter"),
@@ -47,7 +48,7 @@ public partial class MainWindow : Window
             new ComboOption<string>("VB-CABLE A+B, if installed", "vb-ab"),
             new ComboOption<string>("Manual device selection", "manual")
         };
-        RoutingPresetBox.SelectedIndex = 0;
+        SelectComboOptionByValue(RoutingPresetBox, preferences.RoutingPreset, "voicemeeter");
         VoiceSpeedBox.ItemsSource = new[]
         {
             new ComboOption<int>("1x - natural", 0),
@@ -56,7 +57,7 @@ public partial class MainWindow : Window
             new ComboOption<int>("2.5x - fast", 7),
             new ComboOption<int>("3x - very fast", 9)
         };
-        VoiceSpeedBox.SelectedIndex = 2;
+        SelectComboOptionByValue(VoiceSpeedBox, preferences.VoiceRate, 5);
         StartDelayBox.ItemsSource = new[]
         {
             new ComboOption<int>("No delay", 0),
@@ -64,11 +65,15 @@ public partial class MainWindow : Window
             new ComboOption<int>("5 seconds", 5),
             new ComboOption<int>("10 seconds", 10)
         };
-        StartDelayBox.SelectedIndex = 0;
+        SelectComboOptionByValue(StartDelayBox, preferences.StartDelaySeconds, 0);
+        SpeakerCuesBox.IsChecked = preferences.SpeakSpeakerCues ?? false;
         ScenarioNotesBox.Text = "The customer account is interested but concerned about delivery confidence, stakeholder adoption, and proving value quickly.";
         RefreshEdgeProfiles();
-        RefreshAudioSelectors();
-        ApplyRoutingPreset(showStatus: false);
+        RefreshAudioSelectors(preferences);
+        if (string.IsNullOrWhiteSpace(preferences.SellerOutputDeviceName) && string.IsNullOrWhiteSpace(preferences.CustomerOutputDeviceName))
+        {
+            ApplyRoutingPreset(showStatus: false);
+        }
     }
 
     private void RefreshEdgeProfiles()
@@ -82,19 +87,20 @@ public partial class MainWindow : Window
         }
     }
 
-    private void RefreshAudioSelectors()
+    private void RefreshAudioSelectors(PlayerPreferences? preferences = null)
     {
+        preferences ??= new PlayerPreferences();
         var devices = _audio.GetOutputDevices();
         SellerDeviceBox.ItemsSource = devices;
         CustomerDeviceBox.ItemsSource = devices;
-        SellerDeviceBox.SelectedItem = FindPreferredDevice(devices, "CABLE-A Input") ?? devices.FirstOrDefault();
-        CustomerDeviceBox.SelectedItem = FindPreferredDevice(devices, "CABLE-B Input") ?? devices.Skip(1).FirstOrDefault() ?? devices.FirstOrDefault();
+        SellerDeviceBox.SelectedItem = FindDeviceByName(devices, preferences.SellerOutputDeviceName) ?? FindPreferredDevice(devices, "CABLE-A Input") ?? devices.FirstOrDefault();
+        CustomerDeviceBox.SelectedItem = FindDeviceByName(devices, preferences.CustomerOutputDeviceName) ?? FindPreferredDevice(devices, "CABLE-B Input") ?? devices.Skip(1).FirstOrDefault() ?? devices.FirstOrDefault();
 
         var voices = _audio.GetVoices();
         SellerVoiceBox.ItemsSource = voices;
         CustomerVoiceBox.ItemsSource = voices;
-        SellerVoiceBox.SelectedItem = voices.FirstOrDefault(voice => ContainsAny(voice.Name, "David", "Guy", "Mark", "George", "Ryan")) ?? voices.FirstOrDefault();
-        CustomerVoiceBox.SelectedItem = voices.FirstOrDefault(voice => !Equals(voice, SellerVoiceBox.SelectedItem) && ContainsAny(voice.Name, "Zira", "Jenny", "Aria", "Sonia", "Hazel", "Susan")) ?? voices.FirstOrDefault(voice => !Equals(voice, SellerVoiceBox.SelectedItem)) ?? voices.FirstOrDefault();
+        SellerVoiceBox.SelectedItem = FindVoiceByName(voices, preferences.SellerVoiceName) ?? voices.FirstOrDefault(voice => ContainsAny(voice.Name, "David", "Guy", "Mark", "George", "Ryan")) ?? voices.FirstOrDefault();
+        CustomerVoiceBox.SelectedItem = FindVoiceByName(voices, preferences.CustomerVoiceName) ?? voices.FirstOrDefault(voice => !Equals(voice, SellerVoiceBox.SelectedItem) && ContainsAny(voice.Name, "Zira", "Jenny", "Aria", "Sonia", "Hazel", "Susan")) ?? voices.FirstOrDefault(voice => !Equals(voice, SellerVoiceBox.SelectedItem)) ?? voices.FirstOrDefault();
     }
 
     private void ApplyRoutingPreset(bool showStatus = true)
@@ -139,6 +145,16 @@ public partial class MainWindow : Window
     private static AudioOutputDevice? FindPreferredDevice(IEnumerable<AudioOutputDevice> devices, params string[] preferredNames)
     {
         return devices.FirstOrDefault(device => preferredNames.Any(preferredName => device.Name.Contains(preferredName, StringComparison.OrdinalIgnoreCase)));
+    }
+
+    private static AudioOutputDevice? FindDeviceByName(IEnumerable<AudioOutputDevice> devices, string? deviceName)
+    {
+        return string.IsNullOrWhiteSpace(deviceName) ? null : devices.FirstOrDefault(device => string.Equals(device.Name, deviceName, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static SpeechVoice? FindVoiceByName(IEnumerable<SpeechVoice> voices, string? voiceName)
+    {
+        return string.IsNullOrWhiteSpace(voiceName) ? null : voices.FirstOrDefault(voice => string.Equals(voice.Name, voiceName, StringComparison.OrdinalIgnoreCase));
     }
 
     private static bool ContainsAny(string value, params string[] parts)
@@ -281,8 +297,8 @@ public partial class MainWindow : Window
 
     private void RefreshDevicesButton_Click(object sender, RoutedEventArgs e)
     {
-        RefreshAudioSelectors();
-        ApplyRoutingPreset();
+        RefreshAudioSelectors(CapturePlayerPreferences());
+        StatusText.Text = "Audio devices and voices refreshed.";
     }
 
     private void RefreshProfilesButton_Click(object sender, RoutedEventArgs e)
@@ -326,7 +342,7 @@ public partial class MainWindow : Window
                 FileName = path,
                 UseShellExecute = true
             });
-            _windowSettings.SaveVoicemeeterBananaPath(path);
+            _windowSettings.SavePlayerPreferences(CapturePlayerPreferences() with { VoicemeeterBananaPath = path });
             StatusText.Text = "Voicemeeter Banana launch requested. Keep it running before starting playback.";
         }
         catch (Exception ex)
@@ -337,7 +353,24 @@ public partial class MainWindow : Window
 
     private void SaveWindowSettings()
     {
-        _windowSettings.Save(this, VoicemeeterPathBox.Text.Trim().Trim('"'));
+        _windowSettings.Save(this, CapturePlayerPreferences());
+    }
+
+    private PlayerPreferences CapturePlayerPreferences()
+    {
+        return new PlayerPreferences
+        {
+            VoicemeeterBananaPath = VoicemeeterPathBox.Text.Trim().Trim('"'),
+            RoutingPreset = ((ComboOption<string>?)RoutingPresetBox.SelectedItem)?.Value,
+            PlaybackMode = ((ComboOption<PlaybackMode>?)PlaybackModeBox.SelectedItem)?.Value,
+            SellerOutputDeviceName = (SellerDeviceBox.SelectedItem as AudioOutputDevice)?.Name,
+            CustomerOutputDeviceName = (CustomerDeviceBox.SelectedItem as AudioOutputDevice)?.Name,
+            SellerVoiceName = (SellerVoiceBox.SelectedItem as SpeechVoice)?.Name,
+            CustomerVoiceName = (CustomerVoiceBox.SelectedItem as SpeechVoice)?.Name,
+            VoiceRate = ((ComboOption<int>?)VoiceSpeedBox.SelectedItem)?.Value,
+            StartDelaySeconds = ((ComboOption<int>?)StartDelayBox.SelectedItem)?.Value,
+            SpeakSpeakerCues = SpeakerCuesBox.IsChecked
+        };
     }
 
     private static string GetDefaultVoicemeeterBananaPath()
@@ -349,6 +382,16 @@ public partial class MainWindow : Window
         };
 
         return candidates.FirstOrDefault(File.Exists) ?? candidates[0];
+    }
+
+    private static void SelectComboOptionByValue<T>(System.Windows.Controls.ComboBox comboBox, T? preferredValue, T fallbackValue)
+    {
+        var selectedValue = preferredValue ?? fallbackValue;
+        comboBox.SelectedItem = comboBox.ItemsSource?.Cast<ComboOption<T>>().FirstOrDefault(option => EqualityComparer<T>.Default.Equals(option.Value, selectedValue));
+        if (comboBox.SelectedItem == null)
+        {
+            comboBox.SelectedIndex = 0;
+        }
     }
 
     private void SetBusy(bool isBusy, string? message = null)
