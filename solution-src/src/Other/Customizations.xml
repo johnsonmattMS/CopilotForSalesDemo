@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Entities />
+  <Roles />
+  <Workflows />
+  <FieldSecurityProfiles />
+  <Templates />
+  <EntityMaps />
+  <EntityRelationships />
+  <OrganizationSettings />
+  <optionsets />
+  <CustomControls />
+  <SolutionPluginAssemblies />
+  <EntityDataProviders />
+  <WebResources>
+    <WebResource>
+      <WebResourceId>{3df241ef-10f2-4ea7-a675-54b74e6fd3d4}</WebResourceId>
+      <Name>c4s_copilot_sales_demo_generator.html</Name>
+      <DisplayName>Copilot for Sales Demo Generator</DisplayName>
+      <Description>Synthetic Teams and Copilot for Sales demo generator for sales meeting transcripts.</Description>
+      <WebResourceType>1</WebResourceType>
+      <IntroducedVersion>1.0.0.0</IntroducedVersion>
+      <IsEnabledForMobileClient>0</IsEnabledForMobileClient>
+      <IsAvailableForMobileOffline>0</IsAvailableForMobileOffline>
+      <IsCustomizable>1</IsCustomizable>
+      <CanBeDeleted>1</CanBeDeleted>
+      <IsHidden>0</IsHidden>
+      <FileName>/WebResources/c4s_copilot_sales_demo_generatorhtml3DF241EF10F24EA7A67554B74E6FD3D4</FileName>
+    </WebResource>
+  </WebResources>
+  <Languages>
+    <Language>1033</Language>
+  </Languages>
+</ImportExportXml>

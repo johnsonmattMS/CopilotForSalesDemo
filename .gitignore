@@ -1,0 +1,16 @@
+# Build outputs
+[Bb]in/
+[Oo]bj/
+**/[Bb]in/
+**/[Oo]bj/
+
+# Local working folders
+temp_*/
+
+# MSBuild logs and user files
+*.binlog
+*.user
+
+# Visual Studio / VS Code local state
+.vs/
+.vscode/.ropeproject/

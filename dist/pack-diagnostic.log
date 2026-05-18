@@ -1,0 +1,23 @@
+2026-05-14 18:33:22.175 - Info	
+Packing C:\Users\johnsonmatt\OneDrive - Microsoft\Documents\VS Code Projects\CopilotForSalesDemo\solution-src\src to C:\Users\johnsonmatt\OneDrive - Microsoft\Documents\VS Code Projects\CopilotForSalesDemo\dist\C4SCopilotForSalesDemo_diagnostic.zip
+
+2026-05-14 18:33:22.186 - Info	Processing Component: Entities
+2026-05-14 18:33:22.188 - Info	Processing Component: Roles
+2026-05-14 18:33:22.191 - Info	Processing Component: Workflows
+2026-05-14 18:33:22.191 - Info	Processing Component: FieldSecurityProfiles
+2026-05-14 18:33:22.192 - Info	Processing Component: Templates
+2026-05-14 18:33:22.193 - Info	Processing Component: EntityMaps
+2026-05-14 18:33:22.193 - Info	Processing Component: EntityRelationships
+2026-05-14 18:33:22.197 - Info	Processing Component: OrganizationSettings
+2026-05-14 18:33:22.198 - Info	Processing Component: optionsets
+2026-05-14 18:33:22.198 - Info	Processing Component: CustomControls
+2026-05-14 18:33:22.199 - Info	Processing Component: SolutionPluginAssemblies
+2026-05-14 18:33:22.202 - Info	Processing Component: EntityDataProviders
+2026-05-14 18:33:22.203 - Warning	Component: WebResources is a supported component type but has unexpected children in Customizations.xml; this component's specific processing will be skipped. Make it a childless element if action=Pack should process any of the component's files or metadata xml.
+2026-05-14 18:33:22.204 - Info	Processing Sharded Component Files
+2026-05-14 18:33:22.215 - Warning	Following root components are not defined in customizations:
+  Type='WebResource', Id (or schema name)='WebResource-c4s_copilot_sales_demo_generator.html'.
+
+2026-05-14 18:33:22.230 - Info	
+Unmanaged Pack complete.
+

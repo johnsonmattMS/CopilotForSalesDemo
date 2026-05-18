@@ -1,0 +1,1355 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Copilot for Sales Demo Generator</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f5f3;
+      --panel: #ffffff;
+      --panel-soft: #fafafa;
+      --border: #d8d8d5;
+      --border-strong: #b8b8b3;
+      --text: #1f2528;
+      --muted: #657174;
+      --accent: #0f6cbd;
+      --accent-strong: #0b5cab;
+      --success: #107c10;
+      --warn: #a15c00;
+      --danger: #c50f1f;
+      --shadow: 0 1px 3px rgba(0, 0, 0, .12);
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(330px, 420px) minmax(480px, 1fr);
+      gap: 0;
+    }
+
+    .config {
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+
+    .header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .form {
+      padding: 18px 20px 20px;
+      overflow: auto;
+    }
+
+    .section {
+      margin-bottom: 22px;
+    }
+
+    .section-title {
+      margin: 0 0 10px;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #475256;
+      letter-spacing: .02em;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #273136;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--border-strong);
+      border-radius: 4px;
+      background: #fff;
+      color: var(--text);
+      padding: 8px 9px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 82px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    input[readonly] {
+      background: #f8f8f8;
+      color: #3d464a;
+    }
+
+    .lookup-control {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+    }
+
+    .lookup-control .button {
+      min-width: 92px;
+    }
+
+    .field-note {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      border: 1px solid var(--border-strong);
+      border-radius: 4px;
+      overflow: hidden;
+      background: #fff;
+      min-height: 36px;
+    }
+
+    .segment {
+      border: 0;
+      border-right: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .segment:last-child { border-right: 0; }
+    .segment.active { background: var(--accent); color: #fff; }
+
+    .actions {
+      position: sticky;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      background: rgba(255, 255, 255, .96);
+      box-shadow: 0 -1px 2px rgba(0, 0, 0, .04);
+    }
+
+    .button {
+      min-height: 36px;
+      border-radius: 4px;
+      border: 1px solid var(--border-strong);
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-weight: 600;
+    }
+
+    .button svg { width: 16px; height: 16px; }
+    .button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .button.primary:hover { background: var(--accent-strong); }
+    .button:hover { border-color: #7d8588; }
+    .button:disabled { opacity: .55; cursor: not-allowed; }
+
+    .workspace {
+      min-width: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-height: 100vh;
+    }
+
+    .toolbar {
+      min-height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--success);
+    }
+
+    .tabs {
+      display: inline-flex;
+      border: 1px solid var(--border-strong);
+      border-radius: 4px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .tab {
+      border: 0;
+      border-right: 1px solid var(--border);
+      min-height: 34px;
+      padding: 0 12px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .tab:last-child { border-right: 0; }
+    .tab.active { background: #eaf3fb; color: var(--accent-strong); font-weight: 600; }
+
+    .preview-shell {
+      overflow: auto;
+      padding: 20px;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) minmax(300px, 420px);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .panel-body { padding: 16px; }
+
+    .meeting-title {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .icon-box {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      background: #eaf3fb;
+      color: var(--accent-strong);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+
+    .icon-box svg { width: 18px; height: 18px; }
+
+    .meeting-title h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    .meta {
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.35;
+    }
+
+    .summary-block { margin-top: 18px; }
+    .summary-block h4 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .summary-block p, .summary-block li {
+      line-height: 1.48;
+    }
+
+    .summary-block p { margin: 0; }
+
+    ul, ol { margin: 0; padding-left: 20px; }
+    li + li { margin-top: 6px; }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #eef6ee;
+      color: #0b5a0b;
+      border: 1px solid #cfe8cf;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .pill.warn { background: #fff4ce; color: #7a4100; border-color: #f6d98b; }
+    .pill.info { background: #eaf3fb; color: var(--accent-strong); border-color: #c8e0f4; }
+
+    .task {
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .task:last-child { border-bottom: 0; padding-bottom: 0; }
+    .task-title { font-weight: 600; margin-bottom: 3px; }
+    .task-meta { color: var(--muted); font-size: 12px; }
+
+    .transcript {
+      white-space: pre-wrap;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      background: #fbfbfb;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px;
+      max-height: 560px;
+      overflow: auto;
+    }
+
+    .hidden { display: none !important; }
+
+    .save-result {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 4px;
+      background: #eef6ee;
+      border: 1px solid #cfe8cf;
+      color: #0b5a0b;
+      line-height: 1.4;
+    }
+
+    .audio-note {
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid #f6d98b;
+      background: #fff8e1;
+      color: #684000;
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+
+    .audio-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .audio-controls.three {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .device-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+    }
+
+    .device-row .button {
+      min-width: 86px;
+    }
+
+    .device-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      margin: -4px 0 14px;
+    }
+
+    .check-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 14px;
+      font-weight: 600;
+    }
+
+    .check-row input {
+      width: auto;
+      margin: 0;
+    }
+
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      .config { min-height: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+      .workspace { min-height: auto; }
+      .preview-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 620px) {
+      .row, .actions { grid-template-columns: 1fr; }
+      .audio-controls, .audio-controls.three { grid-template-columns: 1fr; }
+      .toolbar { align-items: flex-start; flex-direction: column; }
+      .tabs { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); }
+      .tab { padding: 0 6px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <aside class="config">
+      <div class="header">
+        <h1>Copilot for Sales Demo Generator</h1>
+        <p>Generate a synthetic sales meeting, play it into Teams for transcription, or save a CRM-style activity footprint for demos.</p>
+      </div>
+
+      <div class="form">
+        <section class="section">
+          <h2 class="section-title">Appointment context</h2>
+          <div class="field">
+            <label for="recordName">D365 record</label>
+            <input id="recordName" value="Contoso ERP Modernisation" autocomplete="off" readonly>
+            <div id="contextHint" class="field-note">Open this from an appointment to use the appointment regarding record.</div>
+          </div>
+          <div class="field">
+            <label for="customerAccountName">Customer account name</label>
+            <div class="lookup-control">
+              <input id="customerAccountName" value="HSBC" autocomplete="off" readonly>
+              <button id="accountLookupBtn" class="button" type="button">Select</button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="sellerName">Seller</label>
+              <div class="lookup-control">
+                <input id="sellerName" value="Avery Howard" autocomplete="off" readonly>
+                <button id="sellerLookupBtn" class="button" type="button">Select</button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="customerName">Customer contact name</label>
+              <div class="lookup-control">
+                <input id="customerName" value="Morgan Lee" autocomplete="off" readonly>
+                <button id="contactLookupBtn" class="button" type="button">Select</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">Conversation</h2>
+          <div class="field">
+            <label for="theme">Theme</label>
+            <select id="theme">
+              <option value="renewal-risk">Renewal risk</option>
+              <option value="pricing-objection">Pricing objection</option>
+              <option value="project-delay">Project delay</option>
+              <option value="cross-sell">Cross-sell discovery</option>
+              <option value="executive-alignment">Executive alignment</option>
+              <option value="competitor-displacement">Competitor displacement</option>
+            </select>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="tone">Tone</label>
+              <select id="tone">
+                <option value="balanced">Balanced</option>
+                <option value="positive">Positive</option>
+                <option value="tense">Tense</option>
+                <option value="recovery">Recovery</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="length">Length</label>
+              <select id="length">
+                <option value="short">Short</option>
+                <option value="medium" selected>Medium</option>
+                <option value="detailed">Detailed</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="scenarioNotes">Scenario notes</label>
+            <textarea id="scenarioNotes">The customer account is interested but concerned about delivery confidence, stakeholder adoption, and proving value quickly.</textarea>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">Output</h2>
+          <div class="field">
+            <label for="meetingDate">Meeting date</label>
+            <input id="meetingDate" type="datetime-local">
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="duration">Duration</label>
+              <select id="duration">
+                <option value="15">15 minutes</option>
+                <option value="30" selected>30 minutes</option>
+                <option value="45">45 minutes</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="sentiment">Sentiment</label>
+              <select id="sentiment">
+                <option value="Positive">Positive</option>
+                <option value="Neutral" selected>Neutral</option>
+                <option value="Mixed">Mixed</option>
+              </select>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="actions">
+        <button id="generateBtn" class="button primary" type="button" title="Generate transcript and summary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 21l-1.9-7.8L4 11l6.1-2.2L12 3z"/></svg>
+          Generate
+        </button>
+        <button id="saveBtn" class="button" type="button" title="Save generated transcript to this appointment">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>
+          Save transcript
+        </button>
+      </div>
+    </aside>
+
+    <section class="workspace">
+      <div class="toolbar">
+        <div class="status"><span class="dot"></span><span id="modeLabel">Preview mode</span></div>
+        <div class="tabs" role="tablist" aria-label="Preview tabs">
+          <button class="tab active" type="button" data-tab="summary">Summary</button>
+          <button class="tab" type="button" data-tab="transcript">Transcript</button>
+          <button class="tab" type="button" data-tab="audio">Teams audio</button>
+        </div>
+      </div>
+
+      <div class="preview-shell">
+        <div id="summaryView" class="preview-grid">
+          <article class="panel">
+            <div class="panel-head">
+              <h2>CRM meeting notes</h2>
+              <span class="pill info" id="recordBadge">Opportunity</span>
+            </div>
+            <div class="panel-body" id="summaryPane"></div>
+          </article>
+          <aside class="panel">
+            <div class="panel-head"><h2>Follow-up tasks</h2></div>
+            <div class="panel-body" id="tasksPane"></div>
+          </aside>
+        </div>
+
+        <article id="transcriptView" class="panel hidden">
+          <div class="panel-head"><h2>Generated transcript</h2></div>
+          <div class="panel-body"><div id="transcriptPane" class="transcript"></div></div>
+        </article>
+
+        <article id="audioView" class="panel hidden">
+          <div class="panel-head"><h2>Teams audio playback</h2></div>
+          <div class="panel-body">
+            <div class="audio-note">For two-speaker Teams transcription, open this page twice: one instance plays the seller feed into one virtual cable, and the other plays the customer feed into another virtual cable. Join the Teams meeting as two separate participants and set each participant microphone to the matching virtual cable output.</div>
+            <div class="audio-controls three">
+              <div class="field">
+                <label for="playbackRole">This player</label>
+                <select id="playbackRole">
+                  <option value="both">Both speakers</option>
+                  <option value="seller">Seller only</option>
+                  <option value="customer">Customer only</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="targetDevice">Target output</label>
+                <div class="device-row">
+                  <select id="targetDevice"></select>
+                  <button id="refreshDevicesBtn" class="button" type="button">Refresh</button>
+                </div>
+              </div>
+              <div class="field">
+                <label for="playbackDelay">Start delay</label>
+                <select id="playbackDelay">
+                  <option value="0">No delay</option>
+                  <option value="3" selected>3 seconds</option>
+                  <option value="5">5 seconds</option>
+                  <option value="10">10 seconds</option>
+                </select>
+              </div>
+            </div>
+            <div id="deviceNote" class="device-note">Choose the virtual cable here as a setup reminder, then route this browser/profile to the same playback device in Windows sound settings if browser speech does not follow the selected output.</div>
+            <div class="audio-controls">
+              <div class="field">
+                <label for="sellerVoice">Seller voice</label>
+                <select id="sellerVoice"></select>
+              </div>
+              <div class="field">
+                <label for="customerVoice">Customer voice</label>
+                <select id="customerVoice"></select>
+              </div>
+            </div>
+            <label class="check-row" for="speakerCues">
+              <input id="speakerCues" type="checkbox" checked>
+              Speak short speaker-name cues
+            </label>
+            <button id="playBtn" class="button primary" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+              Play synthetic conversation
+            </button>
+            <button id="stopBtn" class="button" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12"/></svg>
+              Stop
+            </button>
+            <div id="audioStatus" class="meta" style="margin-top:12px;">Ready.</div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (async function () {
+      const hostXrm = window.Xrm || (window.parent && window.parent.Xrm ? window.parent.Xrm : null);
+      const context = hostXrm && hostXrm.Utility && hostXrm.Utility.getGlobalContext ? hostXrm.Utility.getGlobalContext() : null;
+      const formContext = hostXrm && hostXrm.Page && hostXrm.Page.data ? hostXrm.Page : null;
+      const isDataverse = Boolean(context && hostXrm && hostXrm.WebApi);
+      const state = {
+        generated: null,
+        appointment: { id: null, subject: "", start: null, end: null, regarding: null },
+        lookups: {
+          account: { id: null, name: "HSBC", entityType: "account" },
+          seller: { id: null, name: "Avery Howard", entityType: "systemuser" },
+          contact: { id: null, name: "Morgan Lee", entityType: "contact" }
+        }
+      };
+
+      const themes = {
+        "renewal-risk": {
+          label: "Renewal risk",
+          subject: "Renewal health review",
+          points: ["The customer wants clearer evidence of value before renewal.", "Adoption is uneven across business units.", "A senior sponsor needs a concise risk and value brief."],
+          risks: ["Renewal decision may slip without quantified benefits.", "Competing priorities could reduce stakeholder engagement."],
+          tasks: ["Send value realisation summary", "Schedule sponsor alignment call", "Share adoption improvement plan"]
+        },
+        "pricing-objection": {
+          label: "Pricing objection",
+          subject: "Commercial review",
+          points: ["The customer challenged the proposed pricing model.", "The seller reframed the proposal around risk reduction and speed to value.", "Procurement needs a clearer breakdown of implementation phases."],
+          risks: ["Pricing pressure could reduce scope.", "Procurement may benchmark against a lower-cost competitor."],
+          tasks: ["Send phased pricing option", "Prepare value comparison", "Book procurement follow-up"]
+        },
+        "project-delay": {
+          label: "Project delay",
+          subject: "Delivery confidence check-in",
+          points: ["The customer raised concerns about timeline confidence.", "The seller acknowledged the delay and proposed tighter governance.", "Both sides agreed to weekly checkpoint reporting."],
+          risks: ["Delayed dependency decisions may affect go-live.", "Stakeholder confidence needs rebuilding."],
+          tasks: ["Share revised delivery plan", "Confirm dependency owners", "Create weekly checkpoint cadence"]
+        },
+        "cross-sell": {
+          label: "Cross-sell discovery",
+          subject: "Expansion discovery call",
+          points: ["The customer described adjacent needs in service operations.", "The seller connected the current deployment to a broader transformation roadmap.", "There is appetite for a short discovery workshop."],
+          risks: ["Budget ownership is unclear.", "The buying committee may differ from the current opportunity."],
+          tasks: ["Map expansion stakeholders", "Draft discovery workshop agenda", "Introduce service operations specialist"]
+        },
+        "executive-alignment": {
+          label: "Executive alignment",
+          subject: "Executive alignment meeting",
+          points: ["The executive sponsor wants a simpler narrative for board approval.", "The seller positioned the work around customer experience and margin protection.", "Both parties agreed success metrics should be made explicit."],
+          risks: ["Board approval depends on a stronger financial story.", "Benefits ownership needs to be assigned."],
+          tasks: ["Create executive briefing", "Define success metrics", "Schedule board-prep review"]
+        },
+        "competitor-displacement": {
+          label: "Competitor displacement",
+          subject: "Competitive positioning review",
+          points: ["The customer is comparing the proposal with an incumbent supplier.", "The seller highlighted integration strength and lower operational friction.", "A proof point from a similar customer would help progress the decision."],
+          risks: ["Incumbent relationship may slow displacement.", "Technical evaluation criteria need tightening."],
+          tasks: ["Send relevant customer proof point", "Document technical differentiators", "Arrange solution architect session"]
+        }
+      };
+
+      function $(id) { return document.getElementById(id); }
+
+      function normalizeGuid(value) {
+        return value ? String(value).replace(/[{}]/g, "") : null;
+      }
+
+      function makeLookup(value, fallbackEntityType) {
+        if (!value) return null;
+        return {
+          id: normalizeGuid(value.id || value.activitypartyid || value.partyid),
+          name: value.name || value.fullname || value.subject || "",
+          entityType: value.entityType || value.logicalName || fallbackEntityType || value["@odata.type"]
+        };
+      }
+
+      function getAttributeValue(name) {
+        if (!formContext || !formContext.getAttribute) return null;
+        const attribute = formContext.getAttribute(name);
+        return attribute ? attribute.getValue() : null;
+      }
+
+      function getLookupFromAttribute(name, fallbackEntityType) {
+        const value = getAttributeValue(name);
+        if (!value) return null;
+        if (Array.isArray(value)) return makeLookup(value[0], fallbackEntityType);
+        return makeLookup(value, fallbackEntityType);
+      }
+
+      function getPartyLookup(attributeName, entityType) {
+        const parties = getAttributeValue(attributeName) || [];
+        for (const party of parties) {
+          const lookup = makeLookup(party, party.entityType);
+          if (lookup && (!entityType || lookup.entityType === entityType)) return lookup;
+          if (party && party.partyid) {
+            const nested = Array.isArray(party.partyid) ? party.partyid[0] : party.partyid;
+            const nestedLookup = makeLookup(nested, entityType);
+            if (nestedLookup && (!entityType || nestedLookup.entityType === entityType)) return nestedLookup;
+          }
+        }
+        return null;
+      }
+
+      function setLookupState(key, lookup) {
+        if (!lookup) return;
+        state.lookups[key] = lookup;
+        const inputId = key === "account" ? "customerAccountName" : key === "seller" ? "sellerName" : "customerName";
+        $(inputId).value = lookup.name || "";
+        generate();
+      }
+
+      function setRecordContext(lookup) {
+        state.appointment.regarding = lookup;
+        $("recordName").value = lookup && lookup.name ? lookup.name : "No regarding record selected";
+        $("contextHint").textContent = lookup ? "Using the appointment regarding record." : "Set the appointment Regarding field to an account or opportunity for better defaults.";
+      }
+
+      function formatDateTimeLocal(date) {
+        if (!date) return "";
+        const value = new Date(date);
+        return new Date(value.getTime() - value.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+      }
+
+      function getCurrentUserLookup() {
+        if (!context || !context.userSettings) return null;
+        return { id: normalizeGuid(context.userSettings.userId), name: context.userSettings.userName || "Current user", entityType: "systemuser" };
+      }
+
+      function getPluralName(entityType) {
+        return { account: "accounts", opportunity: "opportunities", contact: "contacts", systemuser: "systemusers", appointment: "appointments" }[entityType] || (entityType + "s");
+      }
+
+      function lookupName(row, propertyName) {
+        return row[propertyName + "@OData.Community.Display.V1.FormattedValue"] || "";
+      }
+
+      function lookupType(row, propertyName) {
+        return row[propertyName + "@Microsoft.Dynamics.CRM.lookuplogicalname"] || "";
+      }
+
+      async function retrieveOpportunityDefaults(opportunityLookup) {
+        if (!isDataverse || !opportunityLookup || !opportunityLookup.id) return {};
+        const row = await hostXrm.WebApi.retrieveRecord("opportunity", opportunityLookup.id, "?$select=_parentaccountid_value,_parentcontactid_value,_customerid_value");
+        const defaults = {};
+        if (row._parentaccountid_value) {
+          defaults.account = { id: row._parentaccountid_value, name: lookupName(row, "_parentaccountid_value") || "Selected account", entityType: "account" };
+        } else if (row._customerid_value && lookupType(row, "_customerid_value") === "account") {
+          defaults.account = { id: row._customerid_value, name: lookupName(row, "_customerid_value") || "Selected account", entityType: "account" };
+        }
+        if (row._parentcontactid_value) {
+          defaults.contact = { id: row._parentcontactid_value, name: lookupName(row, "_parentcontactid_value") || "Selected contact", entityType: "contact" };
+        } else if (row._customerid_value && lookupType(row, "_customerid_value") === "contact") {
+          defaults.contact = { id: row._customerid_value, name: lookupName(row, "_customerid_value") || "Selected contact", entityType: "contact" };
+        }
+        return defaults;
+      }
+
+      async function initializeAppointmentContext() {
+        if (!formContext) {
+          setRecordContext({ id: null, name: "Contoso ERP Modernisation", entityType: "opportunity" });
+          return;
+        }
+
+        const entityName = formContext.data && formContext.data.entity ? formContext.data.entity.getEntityName() : "";
+        if (entityName !== "appointment") {
+          $("contextHint").textContent = "This web resource is designed for the appointment form.";
+          return;
+        }
+
+        state.appointment.id = normalizeGuid(formContext.data.entity.getId());
+        state.appointment.subject = getAttributeValue("subject") || "";
+        state.appointment.start = getAttributeValue("scheduledstart");
+        state.appointment.end = getAttributeValue("scheduledend");
+
+        const regarding = getLookupFromAttribute("regardingobjectid");
+        setRecordContext(regarding);
+
+        if (state.appointment.start) $("meetingDate").value = formatDateTimeLocal(state.appointment.start);
+        if (state.appointment.start && state.appointment.end) {
+          const minutes = Math.max(15, Math.round((new Date(state.appointment.end) - new Date(state.appointment.start)) / 60000));
+          $("duration").value = ["15", "30", "45"].indexOf(String(minutes)) >= 0 ? String(minutes) : "30";
+        }
+
+        const seller = getPartyLookup("organizer", "systemuser") || getLookupFromAttribute("ownerid", "systemuser") || getCurrentUserLookup();
+        const contact = getPartyLookup("requiredattendees", "contact") || getPartyLookup("optionalattendees", "contact");
+        if (seller) setLookupState("seller", seller);
+        if (contact) setLookupState("contact", contact);
+
+        if (regarding && regarding.entityType === "account") {
+          setLookupState("account", { id: regarding.id, name: regarding.name, entityType: "account" });
+        }
+        if (regarding && regarding.entityType === "opportunity") {
+          const defaults = await retrieveOpportunityDefaults(regarding);
+          if (defaults.account) setLookupState("account", defaults.account);
+          if (defaults.contact && !contact) setLookupState("contact", defaults.contact);
+        }
+      }
+
+      async function chooseLookup(key, entityType) {
+        if (!hostXrm || !hostXrm.Utility || !hostXrm.Utility.lookupObjects) return;
+        const selected = await hostXrm.Utility.lookupObjects({
+          allowMultiSelect: false,
+          defaultEntityType: entityType,
+          entityTypes: [entityType]
+        });
+        if (selected && selected.length) setLookupState(key, makeLookup(selected[0], entityType));
+      }
+
+      function getInputs() {
+        const regarding = state.appointment.regarding || { id: null, name: $("recordName").value.trim() || "Selected CRM record", entityType: "opportunity" };
+        return {
+          recordType: regarding.entityType || "appointment",
+          recordId: regarding.id,
+          recordName: regarding.name || $("recordName").value.trim() || "Selected CRM record",
+          customerAccountName: state.lookups.account && state.lookups.account.name ? state.lookups.account.name : "the customer account",
+          customerAccountId: state.lookups.account ? state.lookups.account.id : null,
+          sellerName: state.lookups.seller && state.lookups.seller.name ? state.lookups.seller.name : "Seller",
+          sellerId: state.lookups.seller ? state.lookups.seller.id : null,
+          customerName: state.lookups.contact && state.lookups.contact.name ? state.lookups.contact.name : "Customer",
+          customerContactId: state.lookups.contact ? state.lookups.contact.id : null,
+          theme: $("theme").value,
+          tone: $("tone").value,
+          length: $("length").value,
+          notes: $("scenarioNotes").value.trim(),
+          meetingDate: $("meetingDate").value,
+          duration: Number($("duration").value),
+          sentiment: $("sentiment").value
+        };
+      }
+
+      function formatDate(value) {
+        const date = value ? new Date(value) : new Date();
+        return date.toLocaleString(undefined, { weekday: "short", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+      }
+
+      function htmlEscape(value) {
+        return String(value).replace(/[&<>"]/g, function (char) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[char];
+        });
+      }
+
+      function personalizeCustomerText(value, customerAccountName) {
+        return String(value)
+          .replace(/\bThe customer\b/g, customerAccountName)
+          .replace(/\bthe customer\b/g, customerAccountName)
+          .replace(/\bcustomer-facing\b/g, "client-facing")
+          .replace(/\bcustomer\b/g, customerAccountName);
+      }
+
+      function buildConversation(input) {
+        const theme = themes[input.theme];
+        const detail = input.length === "detailed" ? 34 : input.length === "medium" ? 28 : 22;
+        const opener = input.tone === "tense" ? "I want to be direct about the concerns on our side." : "Thanks for making the time today.";
+        const reassurance = input.tone === "positive" ? "That gives us a strong basis to move quickly." : input.tone === "recovery" ? "We can recover confidence if we make the next steps concrete." : "That makes sense, and we can make the next step more specific.";
+        const lines = [
+          [input.customerName, opener],
+          [input.sellerName, "Absolutely. From our side, I want to understand what needs to be true for " + input.recordName + " to move forward with confidence."],
+          [input.customerName, personalizeCustomerText(theme.points[0], input.customerAccountName) + " We are not saying no, but we need a clearer basis for the decision."],
+          [input.sellerName, reassurance + " I would suggest we anchor this around outcomes, owners, and timing so the next step is easy to defend internally."],
+          [input.customerName, personalizeCustomerText(input.notes || theme.points[1], input.customerAccountName)],
+          [input.sellerName, "That is helpful context. The pattern I am hearing is that the business case is there, but the proof and governance need to be sharper."],
+          [input.customerName, personalizeCustomerText(theme.risks[0], input.customerAccountName) + " Our leadership team will ask how we know the value is real and not just optimistic."],
+          [input.sellerName, "On our end, we can bring evidence from comparable programmes and separate the benefits into quick wins, measurable adoption, and longer-term operating improvements."],
+          [input.customerName, "That would help, but the short-term wins need to be credible. " + input.customerAccountName + " has seen projects promise speed before and then lose momentum."],
+          [input.sellerName, "Understood. I would not position this as a big-bang transformation. I would position it as a controlled first phase with visible checkpoints every two weeks."],
+          [input.customerName, "If we did that, who would own the adoption side? That is usually where things slow down for " + input.customerAccountName + "."],
+          [input.sellerName, "We can own the enablement plan with your business lead. I would recommend naming one sponsor, one operational owner, and one technical owner before kickoff."],
+          [input.customerName, "That sounds sensible. I also want the " + input.customerAccountName + " client-facing teams represented because they will feel the impact first."],
+          [input.sellerName, "Agreed. We can include them in the discovery workshop and use their feedback to shape the first release scope."],
+          [input.customerName, personalizeCustomerText(theme.points[1], input.customerAccountName)],
+          [input.sellerName, "From our side, the immediate action is to turn that into a short decision pack: what changes, why it matters, who owns it, and how we measure success."],
+          [input.customerName, "The measurement point is important. The sponsor will want two or three metrics rather than a long list."],
+          [input.sellerName, "I suggest three: cycle time reduction, adoption by priority users, and reduction in manual follow-up. We can tailor those to your reporting language."],
+          [input.customerName, "Good. We also need to be clear about what is out of scope, otherwise people will assume this solves everything at once."],
+          [input.sellerName, "Completely agree. I will include explicit exclusions and a backlog section so future ideas are captured without distracting the first phase."],
+          [input.customerName, personalizeCustomerText(theme.risks[1], input.customerAccountName)],
+          [input.sellerName, "To reduce that risk, I will propose a sponsor checkpoint before the next commercial review. That gives us space to confirm priorities before we talk numbers again."],
+          [input.customerName, "That would make the commercial discussion easier. Procurement will still ask for options."],
+          [input.sellerName, "We can provide a recommended option and a lower-risk phased option. I will avoid giving too many choices because that usually slows the decision."],
+          [input.customerName, "Please also include assumptions. If the assumptions are visible, I can explain the dependency on our side."],
+          [input.sellerName, "Yes. I will separate our assumptions from your dependencies and highlight anything that could change the timeline or cost."],
+          [input.customerName, "What do you need from us this week?"],
+          [input.sellerName, "Two things: confirmation of the sponsor attendees, and access to one operational lead who can validate the adoption priorities."],
+          [input.customerName, "I can get you both. Send me the proposed agenda and I will forward it internally."],
+          [input.sellerName, "Great. I will send the agenda, decision pack outline, and proposed success metrics by tomorrow afternoon."],
+          [input.customerName, "That works. If the pack is clear enough, I think we can keep momentum into next week."],
+          [input.sellerName, "That is the goal. I will also include a short summary of today so there is a clean record of decisions and follow-ups."],
+          [input.customerName, "Perfect. Thanks for making this practical rather than turning it into another broad strategy conversation."],
+          [input.sellerName, "Thank you. We will keep it focused, measurable, and easy for your stakeholders to act on."]
+        ];
+        return lines.slice(0, detail).map(function (line, index) {
+          const elapsedSeconds = Math.min(299, Math.round(index * (300 / Math.max(1, detail - 1))));
+          const minute = String(Math.floor(elapsedSeconds / 60)).padStart(2, "0");
+          const second = String(elapsedSeconds % 60).padStart(2, "0");
+          return "00:" + minute + ":" + second + " " + line[0] + ": " + line[1];
+        }).join("\n");
+      }
+
+      function generate() {
+        const input = getInputs();
+        const theme = themes[input.theme];
+        const transcript = buildConversation(input);
+        const summary = "The meeting focused on " + theme.label.toLowerCase() + " for " + input.recordName + ". " +
+          input.customerAccountName + " confirmed interest but asked for clearer evidence, ownership, and timing before committing to the next step.";
+        state.generated = {
+          input: input,
+          theme: theme,
+          title: theme.subject + " - " + input.recordName,
+          summary: summary,
+          decisions: [
+            "Proceed with a focused follow-up session tied to " + input.recordName + ".",
+            "Use a concise evidence pack to support stakeholder alignment.",
+            "Track actions against named owners before the next review."
+          ],
+          points: theme.points.map(function (point) { return personalizeCustomerText(point, input.customerAccountName); }),
+          risks: theme.risks.map(function (risk) { return personalizeCustomerText(risk, input.customerAccountName); }),
+          tasks: theme.tasks.map(function (task, index) {
+            return { title: task, owner: index === 1 ? input.customerName : input.sellerName, due: index === 0 ? "2 business days" : index === 1 ? "1 week" : "Before next meeting" };
+          }),
+          transcript: transcript
+        };
+        render();
+      }
+
+      function render() {
+        const data = state.generated;
+        if (!data) return;
+        const input = data.input;
+        $("recordBadge").textContent = input.recordType === "opportunity" ? "Opportunity" : input.recordType === "account" ? "Account" : "Appointment";
+        $("summaryPane").innerHTML = "" +
+          "<div class='meeting-title'><span class='icon-box'><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='18' rx='2'/><path d='M16 2v4'/><path d='M8 2v4'/><path d='M3 10h18'/></svg></span><div><h3>" + htmlEscape(data.title) + "</h3><div class='meta'>" + htmlEscape(formatDate(input.meetingDate)) + " · " + input.duration + " minutes · " + htmlEscape(input.sellerName) + " / " + htmlEscape(input.customerName) + "</div></div></div>" +
+          "<div class='pill-row'><span class='pill info'>" + htmlEscape(data.theme.label) + "</span><span class='pill'>" + htmlEscape(input.sentiment) + " sentiment</span><span class='pill warn'>Synthetic demo</span></div>" +
+          "<div class='summary-block'><h4>Summary</h4><p>" + htmlEscape(data.summary) + "</p></div>" +
+          "<div class='summary-block'><h4>Key points</h4><ul>" + data.points.map(function (p) { return "<li>" + htmlEscape(p) + "</li>"; }).join("") + "</ul></div>" +
+          "<div class='summary-block'><h4>Decisions</h4><ul>" + data.decisions.map(function (p) { return "<li>" + htmlEscape(p) + "</li>"; }).join("") + "</ul></div>" +
+          "<div class='summary-block'><h4>Risks</h4><ul>" + data.risks.map(function (p) { return "<li>" + htmlEscape(p) + "</li>"; }).join("") + "</ul></div>";
+        $("tasksPane").innerHTML = data.tasks.map(function (task) {
+          return "<div class='task'><div class='task-title'>" + htmlEscape(task.title) + "</div><div class='task-meta'>Owner: " + htmlEscape(task.owner) + " · Due: " + htmlEscape(task.due) + "</div></div>";
+        }).join("");
+        $("transcriptPane").textContent = data.transcript;
+      }
+
+      function descriptionFromGenerated(data) {
+        return [
+          "AI-generated meeting notes",
+          "",
+          "Summary",
+          data.summary,
+          "",
+          "Key points",
+          data.points.map(function (item) { return "- " + item; }).join("\n"),
+          "",
+          "Decisions",
+          data.decisions.map(function (item) { return "- " + item; }).join("\n"),
+          "",
+          "Risks",
+          data.risks.map(function (item) { return "- " + item; }).join("\n"),
+          "",
+          "Full synthetic transcript",
+          data.transcript
+        ].join("\n");
+      }
+
+      async function saveToDataverse() {
+        if (!state.generated) generate();
+        const data = state.generated;
+        if (!isDataverse) {
+          showSaveResult("Preview saved. In D365 this will update the appointment transcript and create follow-up tasks.");
+          return;
+        }
+
+        if (!state.appointment.id) {
+          showSaveResult("Save the appointment first, then save the generated transcript.");
+          return;
+        }
+
+        const input = data.input;
+        const appointmentUpdate = {
+          description: descriptionFromGenerated(data),
+          location: "Microsoft Teams"
+        };
+        await hostXrm.WebApi.updateRecord("appointment", state.appointment.id, appointmentUpdate);
+
+        for (const task of data.tasks) {
+          const taskRow = {
+            subject: task.title,
+            description: "Generated from synthetic Copilot for Sales demo meeting: " + data.title + "\n\nCustomer account: " + input.customerAccountName + "\nCustomer contact: " + input.customerName,
+            scheduledend: new Date(Date.now() + 7 * 86400000).toISOString()
+          };
+          if (input.sellerId) taskRow["ownerid@odata.bind"] = "/systemusers(" + input.sellerId + ")";
+          if ((input.recordType === "account" || input.recordType === "opportunity") && input.recordId) {
+            taskRow["regardingobjectid_" + input.recordType + "@odata.bind"] = "/" + getPluralName(input.recordType) + "(" + input.recordId + ")";
+          }
+          await hostXrm.WebApi.createRecord("task", taskRow);
+        }
+        showSaveResult("Saved transcript to this appointment and created " + data.tasks.length + " follow-up tasks.");
+      }
+
+      function showSaveResult(message) {
+        const existing = document.querySelector(".save-result");
+        if (existing) existing.remove();
+        const result = document.createElement("div");
+        result.className = "save-result";
+        result.textContent = message;
+        $("tasksPane").appendChild(result);
+      }
+
+      function getEnglishVoices() {
+        const voices = window.speechSynthesis.getVoices();
+        const englishVoices = voices.filter(function (voice) {
+          return /^en[-_]/i.test(voice.lang || "");
+        });
+        return englishVoices.length ? englishVoices : voices;
+      }
+
+      function voiceLabel(voice) {
+        return voice ? voice.name + (voice.lang ? " (" + voice.lang + ")" : "") : "Default browser voice";
+      }
+
+      function populateVoiceSelects(voicePlan) {
+        const voices = getEnglishVoices();
+        ["sellerVoice", "customerVoice"].forEach(function (id) {
+          const select = $(id);
+          select.innerHTML = "";
+          voices.forEach(function (voice, index) {
+            const option = document.createElement("option");
+            option.value = String(index);
+            option.textContent = voiceLabel(voice);
+            select.appendChild(option);
+          });
+        });
+        const sellerIndex = voices.indexOf(voicePlan.seller);
+        const customerIndex = voices.indexOf(voicePlan.customer);
+        if (sellerIndex >= 0) $("sellerVoice").value = String(sellerIndex);
+        if (customerIndex >= 0) $("customerVoice").value = String(customerIndex);
+      }
+
+      function selectedVoice(id, fallback) {
+        const voices = getEnglishVoices();
+        const index = Number($(id).value);
+        return voices[index] || fallback || voices[0] || null;
+      }
+
+      function targetDeviceLabel() {
+        const selected = $("targetDevice").selectedOptions[0];
+        return selected ? selected.textContent : "system default output";
+      }
+
+      function setInitialPlaybackRole() {
+        const role = new URLSearchParams(window.location.search).get("role");
+        if (role === "seller" || role === "customer" || role === "both") $("playbackRole").value = role;
+      }
+
+      async function populateOutputDevices() {
+        const select = $("targetDevice");
+        select.innerHTML = "";
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "default";
+        defaultOption.textContent = "System default output";
+        select.appendChild(defaultOption);
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+          $("deviceNote").textContent = "This browser cannot list output devices. Use Windows sound settings to route this browser/profile to the intended VB-CABLE input.";
+          return;
+        }
+
+        try {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          const outputs = devices.filter(function (device) { return device.kind === "audiooutput"; });
+          outputs.forEach(function (device, index) {
+            const option = document.createElement("option");
+            option.value = device.deviceId;
+            option.textContent = device.label || "Audio output " + (index + 1);
+            select.appendChild(option);
+          });
+          const hasNamedDevices = outputs.some(function (device) { return Boolean(device.label); });
+          $("deviceNote").textContent = hasNamedDevices ? "Select the intended VB-CABLE input for this player, then make sure this browser/profile is routed to that same playback device in Windows if speech uses the system default." : "Device labels are hidden until the browser has audio-device permission. If labels stay blank, route this browser/profile with Windows sound settings.";
+        } catch (error) {
+          $("deviceNote").textContent = "Could not list output devices: " + (error.message || error) + ". Use Windows sound settings to route this browser/profile.";
+        }
+      }
+
+      async function requestDeviceLabels() {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          await populateOutputDevices();
+          return;
+        }
+        let stream = null;
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (error) {
+          // Permission is optional; device routing can still be handled at OS level.
+        } finally {
+          if (stream) stream.getTracks().forEach(function (track) { track.stop(); });
+          await populateOutputDevices();
+        }
+      }
+
+      function transcriptDelayMs(line) {
+        const match = line.match(/^(\d\d):(\d\d):(\d\d)\s+/);
+        if (!match) return 0;
+        return ((Number(match[1]) * 3600) + (Number(match[2]) * 60) + Number(match[3])) * 1000;
+      }
+
+      function waitForVoices() {
+        return new Promise(function (resolve) {
+          const existingVoices = window.speechSynthesis.getVoices();
+          if (existingVoices.length) {
+            resolve(existingVoices);
+            return;
+          }
+          let resolved = false;
+          const finish = function () {
+            if (resolved) return;
+            resolved = true;
+            resolve(window.speechSynthesis.getVoices());
+          };
+          window.speechSynthesis.onvoiceschanged = finish;
+          window.setTimeout(finish, 800);
+        });
+      }
+
+      function getVoicePlan() {
+        const voices = getEnglishVoices();
+        const malePattern = /\b(male|guy|man|david|mark|ryan|george|daniel|james|richard|thomas|william|guy)\b/i;
+        const femalePattern = /\b(female|woman|zira|hazel|susan|aria|jenny|sonia|libby|emma|ava|olivia|samantha|victoria|heera|ravi)\b/i;
+        const sellerVoice = voices.find(function (voice) { return malePattern.test(voice.name); }) || voices[0] || null;
+        const customerVoice = voices.find(function (voice) {
+          return voice !== sellerVoice && femalePattern.test(voice.name);
+        }) || voices.find(function (voice) { return voice !== sellerVoice; }) || sellerVoice;
+        return {
+          seller: sellerVoice,
+          customer: customerVoice,
+          hasDistinctVoices: Boolean(sellerVoice && customerVoice && sellerVoice !== customerVoice),
+          hasGenderedVoices: Boolean(sellerVoice && customerVoice && malePattern.test(sellerVoice.name) && femalePattern.test(customerVoice.name))
+        };
+      }
+
+      function normalizeSpeakerName(value) {
+        return String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+      }
+
+      function parseTranscriptLine(line) {
+        const match = line.match(/^\d\d:\d\d:\d\d\s+([^:]+):\s*(.*)$/);
+        return match ? { speaker: match[1], text: match[2] } : { speaker: "", text: line };
+      }
+
+      function resolveSpeakerRole(line, index, input) {
+        const speaker = normalizeSpeakerName(line.speaker);
+        const seller = normalizeSpeakerName(input.sellerName);
+        const customer = normalizeSpeakerName(input.customerName);
+        if (speaker && seller && speaker === seller) return "seller";
+        if (speaker && customer && speaker === customer) return "customer";
+        return index % 2 === 0 ? "customer" : "seller";
+      }
+
+      async function speakConversation() {
+        if (!state.generated) generate();
+        if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+          $("audioStatus").textContent = "Speech synthesis is not available in this browser.";
+          return;
+        }
+        await waitForVoices();
+        window.speechSynthesis.cancel();
+        const lines = state.generated.transcript.split("\n");
+        const input = state.generated.input;
+        const fallbackVoicePlan = getVoicePlan();
+        const voicePlan = {
+          seller: selectedVoice("sellerVoice", fallbackVoicePlan.seller),
+          customer: selectedVoice("customerVoice", fallbackVoicePlan.customer)
+        };
+        const hasDistinctVoices = Boolean(voicePlan.seller && voicePlan.customer && voicePlan.seller !== voicePlan.customer);
+        const speakerCues = $("speakerCues").checked;
+        const playbackRole = $("playbackRole").value;
+        const startDelayMs = Number($("playbackDelay").value || 0) * 1000;
+        const voiceWarning = hasDistinctVoices ? "" : " Only one browser voice is available or selected, so pitch/rate separation will be used.";
+        const cueList = lines.map(function (rawLine, lineIndex) {
+          const line = parseTranscriptLine(rawLine);
+          const role = resolveSpeakerRole(line, lineIndex, input);
+          return { rawLine: rawLine, line: line, role: role, lineIndex: lineIndex, offsetMs: transcriptDelayMs(rawLine) };
+        }).filter(function (cue) {
+          return playbackRole === "both" || cue.role === playbackRole;
+        });
+        if (!cueList.length) {
+          $("audioStatus").textContent = "No transcript lines match this player role.";
+          return;
+        }
+        const firstOffsetMs = cueList[0].offsetMs;
+        let cueIndex = 0;
+        $("audioStatus").textContent = "Starting " + (playbackRole === "both" ? "both speakers" : playbackRole + " feed") + " in " + (startDelayMs / 1000) + " seconds. Target output: " + targetDeviceLabel() + ".";
+        function scheduleCue(waitMs) {
+          window.setTimeout(playCue, waitMs);
+        }
+        function playCue() {
+          if (cueIndex >= cueList.length) {
+            $("audioStatus").textContent = "Playback complete.";
+            return;
+          }
+          const cue = cueList[cueIndex];
+          const line = cue.line;
+          const role = cue.role;
+          const isSeller = role === "seller";
+          const voice = isSeller ? voicePlan.seller : voicePlan.customer;
+          const speakerName = isSeller ? input.sellerName : input.customerName;
+          const spokenText = speakerCues ? speakerName + " says. " + line.text : line.text;
+          const utterance = new SpeechSynthesisUtterance(spokenText);
+          utterance.lang = voice && voice.lang ? voice.lang : "en-GB";
+          utterance.rate = isSeller ? 1.72 : 1.88;
+          utterance.pitch = isSeller ? .72 : 1.32;
+          utterance.volume = isSeller ? .96 : 1;
+          if (voice) utterance.voice = voice;
+          utterance.onend = function () {
+            const previousOffsetMs = cue.offsetMs;
+            cueIndex += 1;
+            if (cueIndex >= cueList.length) {
+              $("audioStatus").textContent = "Playback complete.";
+              return;
+            }
+            scheduleCue(Math.max(0, cueList[cueIndex].offsetMs - previousOffsetMs));
+          };
+          $("audioStatus").textContent = "Playing " + (playbackRole === "both" ? "combined" : playbackRole) + " feed line " + (cueIndex + 1) + " of " + cueList.length + ": " + speakerName + " using " + voiceLabel(voice) + ". Target output: " + targetDeviceLabel() + "." + voiceWarning;
+          window.speechSynthesis.speak(utterance);
+        }
+        scheduleCue(startDelayMs + Math.max(0, cueList[0].offsetMs - firstOffsetMs));
+      }
+
+      async function initializeVoiceControls() {
+        if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+          $("sellerVoice").disabled = true;
+          $("customerVoice").disabled = true;
+          $("playBtn").disabled = true;
+          $("audioStatus").textContent = "Speech synthesis is not available in this browser.";
+          return;
+        }
+        await waitForVoices();
+        populateVoiceSelects(getVoicePlan());
+        window.speechSynthesis.onvoiceschanged = function () {
+          const sellerValue = $("sellerVoice").value;
+          const customerValue = $("customerVoice").value;
+          populateVoiceSelects(getVoicePlan());
+          if ($("sellerVoice").querySelector("option[value='" + sellerValue + "']")) $("sellerVoice").value = sellerValue;
+          if ($("customerVoice").querySelector("option[value='" + customerValue + "']")) $("customerVoice").value = customerValue;
+        };
+      }
+
+      function setTab(tab) {
+        document.querySelectorAll(".tab").forEach(function (button) { button.classList.toggle("active", button.dataset.tab === tab); });
+        $("summaryView").classList.toggle("hidden", tab !== "summary");
+        $("transcriptView").classList.toggle("hidden", tab !== "transcript");
+        $("audioView").classList.toggle("hidden", tab !== "audio");
+      }
+
+      function initDate() {
+        if ($("meetingDate").value) return;
+        const date = new Date(Date.now() + 86400000);
+        date.setMinutes(0, 0, 0);
+        $("meetingDate").value = new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+      }
+
+      document.querySelectorAll(".tab").forEach(function (button) { button.addEventListener("click", function () { setTab(button.dataset.tab); }); });
+      $("generateBtn").addEventListener("click", generate);
+      $("saveBtn").addEventListener("click", function () { saveToDataverse().catch(function (error) { showSaveResult("Save failed: " + (error.message || error)); }); });
+      $("accountLookupBtn").addEventListener("click", function () { chooseLookup("account", "account").catch(function (error) { showSaveResult("Account lookup failed: " + (error.message || error)); }); });
+      $("sellerLookupBtn").addEventListener("click", function () { chooseLookup("seller", "systemuser").catch(function (error) { showSaveResult("Seller lookup failed: " + (error.message || error)); }); });
+      $("contactLookupBtn").addEventListener("click", function () { chooseLookup("contact", "contact").catch(function (error) { showSaveResult("Contact lookup failed: " + (error.message || error)); }); });
+      $("refreshDevicesBtn").addEventListener("click", function () { requestDeviceLabels(); });
+      $("playBtn").addEventListener("click", speakConversation);
+      $("stopBtn").addEventListener("click", function () { window.speechSynthesis && window.speechSynthesis.cancel(); $("audioStatus").textContent = "Stopped."; });
+      ["theme", "tone", "length", "scenarioNotes", "meetingDate", "duration", "sentiment"].forEach(function (id) {
+        $(id).addEventListener("change", generate);
+      });
+      if (isDataverse) $("modeLabel").textContent = "Appointment form mode";
+      setInitialPlaybackRole();
+      initDate();
+      await populateOutputDevices();
+      await initializeVoiceControls();
+      await initializeAppointmentContext();
+      generate();
+    }());
+  </script>
+</body>
+</html>

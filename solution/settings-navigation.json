@@ -1,0 +1,19 @@
+{
+  "solution": {
+    "publisherPrefix": "c4s",
+    "webResourceName": "c4s_copilot_sales_demo_generator.html",
+    "displayName": "Copilot for Sales Demo Generator"
+  },
+  "appointmentFormTab": {
+    "targetEntity": "appointment",
+    "tabLabel": "Copilot Transcript",
+    "webResource": "c4s_copilot_sales_demo_generator.html",
+    "description": "Generate and save synthetic sales transcripts from the appointment form."
+  },
+  "notes": [
+    "Add the HTML web resource to the managed/unmanaged solution.",
+    "Add the HTML web resource as a tab on the appointment main form.",
+    "Do not add this web resource to the Sales Hub Settings navigation.",
+    "The local preview is available at preview/copilot-sales-demo-preview.html."
+  ]
+}

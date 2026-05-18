@@ -1,0 +1,140 @@
+<Window x:Class="C4STranscriptPlayer.VoicemeeterHelpWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Voicemeeter Routing Help" Height="780" Width="1040" MinHeight="680" MinWidth="900"
+        Background="#f5f5f3" WindowStartupLocation="CenterOwner">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="Foreground" Value="#1f2528" />
+        </Style>
+        <Style TargetType="Border">
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+        <Style x:Key="OnButton" TargetType="Border">
+            <Setter Property="Background" Value="#2fbf88" />
+            <Setter Property="BorderBrush" Value="#11845d" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="Margin" Value="3" />
+        </Style>
+        <Style x:Key="OffButton" TargetType="Border">
+            <Setter Property="Background" Value="#d9dee1" />
+            <Setter Property="BorderBrush" Value="#aeb8bd" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="Margin" Value="3" />
+            <Setter Property="Opacity" Value="0.72" />
+        </Style>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24">
+            <TextBlock Text="Voicemeeter Settings" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,6" />
+            <TextBlock Text="Use this exact routing so Seller Teams only hears seller audio and Customer Teams only hears customer audio." TextWrapping="Wrap" Foreground="#657174" Margin="0,0,0,18" />
+
+            <Border Background="White" BorderBrush="#d8d8d5" BorderThickness="1" Padding="10" Margin="0,0,0,18">
+                <StackPanel>
+                    <TextBlock Text="Reference screenshot" FontWeight="SemiBold" FontSize="16" Margin="4,0,0,8" />
+                    <Image Source="Assets/voicemeeter-routing.png" Stretch="Uniform" MaxHeight="420" />
+                </StackPanel>
+            </Border>
+
+            <Grid Margin="0,0,0,18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Background="White" BorderBrush="#d8d8d5" BorderThickness="1" Padding="18">
+                    <StackPanel>
+                        <TextBlock Text="VIRTUAL INPUTS" Foreground="#657174" FontWeight="SemiBold" FontSize="12" />
+                        <TextBlock Text="Voicemeeter Input" FontSize="20" FontWeight="SemiBold" Margin="0,2,0,2" />
+                        <TextBlock Text="This is the Seller strip" Foreground="#657174" Margin="0,0,0,14" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="90" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="#88d7ad" CornerRadius="22" Width="54" Height="160" HorizontalAlignment="Left">
+                                <TextBlock Text="0dB" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" />
+                            </Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <WrapPanel>
+                                    <Border Style="{StaticResource OffButton}"><TextBlock Text="A1 off" /></Border>
+                                    <Border Style="{StaticResource OffButton}"><TextBlock Text="A2 off" /></Border>
+                                    <Border Style="{StaticResource OffButton}"><TextBlock Text="A3 off" /></Border>
+                                </WrapPanel>
+                                <WrapPanel Margin="0,8,0,0">
+                                    <Border Style="{StaticResource OnButton}"><TextBlock Text="B1 ON" FontWeight="SemiBold" Foreground="White" /></Border>
+                                    <Border Style="{StaticResource OffButton}"><TextBlock Text="B2 off" /></Border>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Background="White" BorderBrush="#d8d8d5" BorderThickness="1" Padding="18">
+                    <StackPanel>
+                        <TextBlock Text="VIRTUAL INPUTS" Foreground="#657174" FontWeight="SemiBold" FontSize="12" />
+                        <TextBlock Text="Voicemeeter AUX" FontSize="20" FontWeight="SemiBold" Margin="0,2,0,2" />
+                        <TextBlock Text="This is the Customer strip" Foreground="#657174" Margin="0,0,0,14" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="90" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="#88d7ad" CornerRadius="22" Width="54" Height="160" HorizontalAlignment="Left">
+                                <TextBlock Text="0dB" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" />
+                            </Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <WrapPanel>
+                                    <Border Style="{StaticResource OffButton}"><TextBlock Text="A1 off" /></Border>
+                                    <Border Style="{StaticResource OffButton}"><TextBlock Text="A2 off" /></Border>
+                                    <Border Style="{StaticResource OffButton}"><TextBlock Text="A3 off" /></Border>
+                                </WrapPanel>
+                                <WrapPanel Margin="0,8,0,0">
+                                    <Border Style="{StaticResource OffButton}"><TextBlock Text="B1 off" /></Border>
+                                    <Border Style="{StaticResource OnButton}"><TextBlock Text="B2 ON" FontWeight="SemiBold" Foreground="White" /></Border>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Grid Margin="0,0,0,18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" Background="White" BorderBrush="#d8d8d5" BorderThickness="1" Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="In this app" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10" />
+                        <TextBlock Text="Seller output device: Voicemeeter Input (VB-Audio Voicemeeter VAIO)" TextWrapping="Wrap" Margin="0,0,0,6" />
+                        <TextBlock Text="Customer output device: Voicemeeter Aux Input (VB-Audio Voicemeeter AUX VAIO)" TextWrapping="Wrap" Margin="0,0,0,6" />
+                        <TextBlock Text="Playback mode: Both speakers" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="2" Background="White" BorderBrush="#d8d8d5" BorderThickness="1" Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="In Teams" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10" />
+                        <TextBlock Text="Seller Teams mic: Voicemeeter Out B1 (VB-Audio Voicemeeter VAIO)" TextWrapping="Wrap" Margin="0,0,0,6" />
+                        <TextBlock Text="Customer Teams mic: Voicemeeter Out B2 (VB-Audio Voicemeeter VAIO)" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Border Background="#fff8df" BorderBrush="#d8c46c" BorderThickness="1" Padding="14">
+                <StackPanel>
+                    <TextBlock Text="If both Teams windows light up at once" FontWeight="SemiBold" Margin="0,0,0,6" />
+                    <TextBlock Text="Check Voicemeeter first. It means both virtual strips are probably routed to B1, both routed to B2, or one Teams window is using the wrong mic. The seller strip must be B1 only. The customer strip must be B2 only." TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

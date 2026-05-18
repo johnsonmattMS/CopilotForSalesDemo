@@ -1,0 +1,203 @@
+﻿<Window x:Class="C4STranscriptPlayer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="C4S Transcript Player" Height="1000" MinHeight="860" Width="1360" MinWidth="1120"
+        Background="#f5f5f3">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="Foreground" Value="#1f2528" />
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="FontFamily" Value="Segoe UI" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="0,0,0,4" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="7,5" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="MinHeight" Value="34" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style x:Key="SectionTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#475256" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="390" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="White" BorderBrush="#d8d8d5" BorderThickness="0,0,1,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="20">
+                    <TextBlock Text="C4S Transcript Player" FontSize="22" FontWeight="SemiBold" Margin="0,0,0,4" />
+                    <TextBlock Text="Load a D365 appointment, generate a synthetic conversation, and route seller/customer audio to separate virtual cables. Voicemeeter Banana must be running before playback." TextWrapping="Wrap" Foreground="#657174" Margin="0,0,0,18" />
+
+                    <TextBlock Text="DATAVERSE" Style="{StaticResource SectionTitle}" />
+                    <Label Content="Environment URL" />
+                    <TextBox x:Name="EnvironmentUrlBox" />
+                    <Label Content="Appointment ID" />
+                    <TextBox x:Name="AppointmentIdBox" />
+                    <Label Content="Edge profile for D365 login" />
+                    <ComboBox x:Name="EdgeProfileBox" />
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
+                        <Button x:Name="LoadAppointmentButton" Content="Load appointment" Click="LoadAppointmentButton_Click" />
+                        <Button x:Name="UseDefaultsButton" Content="Use defaults" Click="UseDefaultsButton_Click" />
+                        <Button x:Name="RefreshProfilesButton" Content="Refresh profiles" Click="RefreshProfilesButton_Click" />
+                    </StackPanel>
+
+                    <TextBlock Text="CONTEXT" Style="{StaticResource SectionTitle}" />
+                    <Label Content="Appointment subject" />
+                    <TextBox x:Name="AppointmentSubjectBox" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="120" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <Label Content="Meeting date/time" />
+                            <TextBox x:Name="MeetingDateBox" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <Label Content="Minutes" />
+                            <TextBox x:Name="DurationMinutesBox" />
+                        </StackPanel>
+                    </Grid>
+                    <Label Content="D365 record" />
+                    <TextBox x:Name="RecordNameBox" />
+                    <Label Content="Customer account" />
+                    <TextBox x:Name="CustomerAccountBox" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <Label Content="Seller" />
+                            <TextBox x:Name="SellerNameBox" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <Label Content="Customer contact" />
+                            <TextBox x:Name="CustomerNameBox" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="SCENARIO" Style="{StaticResource SectionTitle}" Margin="0,8,0,10" />
+                    <Label Content="Theme" />
+                    <ComboBox x:Name="ThemeBox" DisplayMemberPath="Value" SelectedValuePath="Key" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <Label Content="Tone" />
+                            <ComboBox x:Name="ToneBox" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <Label Content="Length" />
+                            <ComboBox x:Name="LengthBox" />
+                        </StackPanel>
+                    </Grid>
+                    <Label Content="Scenario notes" />
+                    <TextBox x:Name="ScenarioNotesBox" MinHeight="78" TextWrapping="Wrap" AcceptsReturn="True" />
+                    <Button x:Name="GenerateButton" Content="Generate transcript" Click="GenerateButton_Click" Margin="0,0,0,18" />
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <Grid Grid.Column="1" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="White" BorderBrush="#d8d8d5" BorderThickness="1" CornerRadius="4" Padding="16" Margin="0,0,0,14">
+                <StackPanel>
+                    <TextBlock x:Name="TitleText" Text="No transcript generated" FontSize="18" FontWeight="SemiBold" />
+                    <TextBlock x:Name="SummaryText" Foreground="#657174" TextWrapping="Wrap" Margin="0,6,0,0" />
+                </StackPanel>
+            </Border>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="390" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" Background="White" BorderBrush="#d8d8d5" BorderThickness="1" CornerRadius="4" Padding="16">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="14" />
+                            <RowDefinition Height="145" />
+                        </Grid.RowDefinitions>
+                        <DockPanel Grid.Row="0">
+                            <TextBlock DockPanel.Dock="Top" Text="Generated transcript" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,10" />
+                            <TextBox x:Name="TranscriptBox" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" FontFamily="Consolas" FontSize="12" />
+                        </DockPanel>
+                        <DockPanel Grid.Row="2">
+                            <TextBlock DockPanel.Dock="Top" Text="Follow-up tasks" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,10" />
+                            <ListBox x:Name="TasksList" BorderThickness="0" />
+                        </DockPanel>
+                    </Grid>
+                </Border>
+                <Border Grid.Column="2" Background="White" BorderBrush="#d8d8d5" BorderThickness="1" CornerRadius="4" Padding="14">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock Text="AUDIO ROUTING" Style="{StaticResource SectionTitle}" />
+                            <TextBlock Text="Set the app outputs here, then match Teams to B1 for seller and B2 for customer." TextWrapping="Wrap" Foreground="#657174" Margin="0,0,0,10" />
+                            <Button x:Name="VoicemeeterHelpButton" Content="Show Voicemeeter help" Click="VoicemeeterHelpButton_Click" Margin="0,0,0,10" />
+                            <Label Content="Routing preset" />
+                            <ComboBox x:Name="RoutingPresetBox" />
+                            <Button x:Name="ApplyRoutingPresetButton" Content="Apply routing preset" Click="ApplyRoutingPresetButton_Click" Margin="0,0,0,10" />
+                            <Label Content="Playback mode" />
+                            <ComboBox x:Name="PlaybackModeBox" />
+                            <Label Content="Seller output device" />
+                            <ComboBox x:Name="SellerDeviceBox" />
+                            <Label Content="Customer output device" />
+                            <ComboBox x:Name="CustomerDeviceBox" />
+                            <Label Content="Seller voice" />
+                            <ComboBox x:Name="SellerVoiceBox" />
+                            <Label Content="Customer voice" />
+                            <ComboBox x:Name="CustomerVoiceBox" />
+                            <Label Content="Voice speed" />
+                            <ComboBox x:Name="VoiceSpeedBox" />
+                            <Label Content="Start delay" />
+                            <ComboBox x:Name="StartDelayBox" />
+                            <CheckBox x:Name="SpeakerCuesBox" Content="Speak short speaker-name cues" IsChecked="False" Margin="0,0,0,12" />
+                            <WrapPanel Margin="0,2,0,0">
+                                <Button x:Name="PlayButton" Content="Play" Click="PlayButton_Click" />
+                                <Button x:Name="StopButton" Content="Stop" Click="StopButton_Click" />
+                                <Button x:Name="RefreshDevicesButton" Content="Refresh devices" Click="RefreshDevicesButton_Click" />
+                            </WrapPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="2" Background="White" BorderBrush="#d8d8d5" BorderThickness="1" CornerRadius="4" Padding="12" Margin="0,14,0,0">
+                <TextBlock x:Name="StatusText" Text="Ready." Foreground="#475256" TextWrapping="Wrap" />
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

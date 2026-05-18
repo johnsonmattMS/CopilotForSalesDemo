@@ -1,0 +1,23 @@
+2026-05-14 18:36:12.995 - Info	
+Packing C:\Users\johnsonmatt\OneDrive - Microsoft\Documents\VS Code Projects\CopilotForSalesDemo\solution-src\src to C:\Users\johnsonmatt\OneDrive - Microsoft\Documents\VS Code Projects\CopilotForSalesDemo\dist\C4SCopilotForSalesDemo_fixedtest.zip
+
+2026-05-14 18:36:13.006 - Info	Processing Component: Entities
+2026-05-14 18:36:13.007 - Info	Processing Component: Roles
+2026-05-14 18:36:13.010 - Info	Processing Component: Workflows
+2026-05-14 18:36:13.010 - Info	Processing Component: FieldSecurityProfiles
+2026-05-14 18:36:13.012 - Info	Processing Component: Templates
+2026-05-14 18:36:13.012 - Info	Processing Component: EntityMaps
+2026-05-14 18:36:13.012 - Info	Processing Component: EntityRelationships
+2026-05-14 18:36:13.013 - Verbose	Reading: C:\Users\johnsonmatt\OneDrive - Microsoft\Documents\VS Code Projects\CopilotForSalesDemo\solution-src\src\Other\Relationships.xml
+2026-05-14 18:36:13.014 - Info	Processing Component: OrganizationSettings
+2026-05-14 18:36:13.014 - Info	Processing Component: optionsets
+2026-05-14 18:36:13.014 - Info	Processing Component: CustomControls
+2026-05-14 18:36:13.015 - Info	Processing Component: SolutionPluginAssemblies
+2026-05-14 18:36:13.015 - Info	Processing Component: EntityDataProviders
+2026-05-14 18:36:13.016 - Info	Processing Sharded Component Files
+2026-05-14 18:36:13.023 - Warning	Following root components are not defined in customizations:
+  Type='WebResource', Id (or schema name)='WebResource-c4s_copilot_sales_demo_generator.html'.
+
+2026-05-14 18:36:13.039 - Info	
+Unmanaged Pack complete.
+

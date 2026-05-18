@@ -1,0 +1,9 @@
+Connected as admin@D365DemoTSCE62322193.onmicrosoft.com
+Connected to... Clean Environment
+Microsoft PowerPlatform CLI
+Version: 1.38.3+g63c17ef
+Online documentation: https://aka.ms/PowerPlatformCLI
+Feedback, Suggestions, Issues: https://github.com/microsoft/powerplatform-build-tools/discussions
+
+Error: The entity with a name = 'appmodulesitemap' with namemapping = 'Logical' was not found in the MetadataCache.LazyDynamicMetadataCache with version 98381936 and timestamp 98381936
+
