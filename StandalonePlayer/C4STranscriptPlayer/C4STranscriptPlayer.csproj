@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Remove="Assets\voicemeeter-routing.png" />
     <Resource Include="Assets\voicemeeter-routing.png" />
+    <None Include="Installers\*.zip" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

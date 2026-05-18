@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Windows;
 
 namespace C4STranscriptPlayer;
@@ -351,6 +352,44 @@ public partial class MainWindow : Window
         }
     }
 
+    private void InstallVoicemeeterButton_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var installerZipPath = FindBundledVoicemeeterInstallerZip();
+            if (installerZipPath == null)
+            {
+                StatusText.Text = "Bundled Voicemeeter Banana installer ZIP was not found.";
+                return;
+            }
+
+            var extractPath = Path.Combine(Path.GetTempPath(), "C4STranscriptPlayer", Path.GetFileNameWithoutExtension(installerZipPath));
+            Directory.CreateDirectory(extractPath);
+            ZipFile.ExtractToDirectory(installerZipPath, extractPath, overwriteFiles: true);
+
+            var installerPath = Directory.EnumerateFiles(extractPath, "*setup*.exe", SearchOption.AllDirectories)
+                .FirstOrDefault(path => Path.GetFileName(path).Contains("voicemeeter", StringComparison.OrdinalIgnoreCase))
+                ?? Directory.EnumerateFiles(extractPath, "*.exe", SearchOption.AllDirectories).FirstOrDefault();
+
+            if (installerPath == null)
+            {
+                StatusText.Text = "The bundled ZIP did not contain a Voicemeeter installer executable.";
+                return;
+            }
+
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = installerPath,
+                UseShellExecute = true
+            });
+            StatusText.Text = "Voicemeeter Banana installer launched. After installation, restart Windows if the installer asks you to.";
+        }
+        catch (Exception ex)
+        {
+            StatusText.Text = "Mixer installer launch failed: " + ex.Message;
+        }
+    }
+
     private void SaveWindowSettings()
     {
         _windowSettings.Save(this, CapturePlayerPreferences());
@@ -382,6 +421,15 @@ public partial class MainWindow : Window
         };
 
         return candidates.FirstOrDefault(File.Exists) ?? candidates[0];
+    }
+
+    private static string? FindBundledVoicemeeterInstallerZip()
+    {
+        var installersPath = Path.Combine(AppContext.BaseDirectory, "Installers");
+        if (!Directory.Exists(installersPath)) return null;
+
+        return Directory.EnumerateFiles(installersPath, "*.zip", SearchOption.TopDirectoryOnly)
+            .FirstOrDefault(path => Path.GetFileName(path).Contains("voicemeeter", StringComparison.OrdinalIgnoreCase));
     }
 
     private static void SelectComboOptionByValue<T>(System.Windows.Controls.ComboBox comboBox, T selectedValue)
