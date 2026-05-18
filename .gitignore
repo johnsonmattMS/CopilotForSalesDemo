@@ -3,6 +3,7 @@
 [Oo]bj/
 **/[Bb]in/
 **/[Oo]bj/
+dist/
 
 # Local working folders
 temp_*/
