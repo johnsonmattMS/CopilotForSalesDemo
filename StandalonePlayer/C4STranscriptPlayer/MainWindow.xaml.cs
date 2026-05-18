@@ -40,7 +40,7 @@ public partial class MainWindow : Window
             new ComboOption<PlaybackMode>("Seller only", PlaybackMode.SellerOnly),
             new ComboOption<PlaybackMode>("Customer only", PlaybackMode.CustomerOnly)
         };
-        SelectComboOptionByValue(PlaybackModeBox, preferences.PlaybackMode, PlaybackMode.Both);
+        SelectComboOptionByValue(PlaybackModeBox, preferences.PlaybackMode ?? PlaybackMode.Both);
         RoutingPresetBox.ItemsSource = new[]
         {
             new ComboOption<string>("Voicemeeter free two-speaker setup", "voicemeeter"),
@@ -48,7 +48,7 @@ public partial class MainWindow : Window
             new ComboOption<string>("VB-CABLE A+B, if installed", "vb-ab"),
             new ComboOption<string>("Manual device selection", "manual")
         };
-        SelectComboOptionByValue(RoutingPresetBox, preferences.RoutingPreset, "voicemeeter");
+        SelectComboOptionByValue(RoutingPresetBox, preferences.RoutingPreset ?? "voicemeeter");
         VoiceSpeedBox.ItemsSource = new[]
         {
             new ComboOption<int>("1x - natural", 0),
@@ -57,7 +57,7 @@ public partial class MainWindow : Window
             new ComboOption<int>("2.5x - fast", 7),
             new ComboOption<int>("3x - very fast", 9)
         };
-        SelectComboOptionByValue(VoiceSpeedBox, preferences.VoiceRate, 5);
+        SelectComboOptionByValue(VoiceSpeedBox, preferences.VoiceRate ?? 5);
         StartDelayBox.ItemsSource = new[]
         {
             new ComboOption<int>("No delay", 0),
@@ -65,7 +65,7 @@ public partial class MainWindow : Window
             new ComboOption<int>("5 seconds", 5),
             new ComboOption<int>("10 seconds", 10)
         };
-        SelectComboOptionByValue(StartDelayBox, preferences.StartDelaySeconds, 0);
+        SelectComboOptionByValue(StartDelayBox, preferences.StartDelaySeconds ?? 0);
         SpeakerCuesBox.IsChecked = preferences.SpeakSpeakerCues ?? false;
         ScenarioNotesBox.Text = "The customer account is interested but concerned about delivery confidence, stakeholder adoption, and proving value quickly.";
         RefreshEdgeProfiles();
@@ -384,9 +384,8 @@ public partial class MainWindow : Window
         return candidates.FirstOrDefault(File.Exists) ?? candidates[0];
     }
 
-    private static void SelectComboOptionByValue<T>(System.Windows.Controls.ComboBox comboBox, T? preferredValue, T fallbackValue)
+    private static void SelectComboOptionByValue<T>(System.Windows.Controls.ComboBox comboBox, T selectedValue)
     {
-        var selectedValue = preferredValue ?? fallbackValue;
         comboBox.SelectedItem = comboBox.ItemsSource?.Cast<ComboOption<T>>().FirstOrDefault(option => EqualityComparer<T>.Default.Equals(option.Value, selectedValue));
         if (comboBox.SelectedItem == null)
         {
