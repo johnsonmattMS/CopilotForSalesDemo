@@ -167,6 +167,10 @@
                             <TextBlock Text="AUDIO ROUTING" Style="{StaticResource SectionTitle}" />
                             <TextBlock Text="Set the app outputs here, then match Teams to B1 for seller and B2 for customer." TextWrapping="Wrap" Foreground="#657174" Margin="0,0,0,10" />
                             <Button x:Name="VoicemeeterHelpButton" Content="Show Voicemeeter help" Click="VoicemeeterHelpButton_Click" Margin="0,0,0,10" />
+                            <Label Content="Voicemeeter Banana path" />
+                            <TextBox x:Name="VoicemeeterPathBox" />
+                            <TextBlock Text="Voicemeeter Banana needs to be running so Teams can accept the seller and customer channels separately." TextWrapping="Wrap" Foreground="#657174" Margin="0,0,0,10" />
+                            <Button x:Name="LaunchVoicemeeterButton" Content="Launch mixer" Click="LaunchVoicemeeterButton_Click" Margin="0,0,0,14" />
                             <Label Content="Routing preset" />
                             <ComboBox x:Name="RoutingPresetBox" />
                             <Button x:Name="ApplyRoutingPresetButton" Content="Apply routing preset" Click="ApplyRoutingPresetButton_Click" Margin="0,0,0,10" />

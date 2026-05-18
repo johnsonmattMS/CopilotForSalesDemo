@@ -32,16 +32,34 @@ public sealed class WindowSettingsService
         }
     }
 
-    public void Save(Window window)
+    public string? LoadVoicemeeterBananaPath()
+    {
+        return Load()?.VoicemeeterBananaPath;
+    }
+
+    public void SaveVoicemeeterBananaPath(string path)
+    {
+        var settings = Load() ?? new WindowSettings();
+        settings.VoicemeeterBananaPath = path;
+        Save(settings);
+    }
+
+    public void Save(Window window, string? voicemeeterBananaPath)
     {
         var bounds = window.WindowState == WindowState.Normal ? new Rect(window.Left, window.Top, window.Width, window.Height) : window.RestoreBounds;
-        var settings = new WindowSettings(
-            Width: Math.Max(window.MinWidth, bounds.Width),
-            Height: Math.Max(window.MinHeight, bounds.Height),
-            Left: bounds.Left,
-            Top: bounds.Top,
-            IsMaximized: window.WindowState == WindowState.Maximized);
+        var settings = Load() ?? new WindowSettings();
+        settings.Width = Math.Max(window.MinWidth, bounds.Width);
+        settings.Height = Math.Max(window.MinHeight, bounds.Height);
+        settings.Left = bounds.Left;
+        settings.Top = bounds.Top;
+        settings.IsMaximized = window.WindowState == WindowState.Maximized;
+        settings.VoicemeeterBananaPath = string.IsNullOrWhiteSpace(voicemeeterBananaPath) ? settings.VoicemeeterBananaPath : voicemeeterBananaPath;
 
+        Save(settings);
+    }
+
+    private void Save(WindowSettings settings)
+    {
         Directory.CreateDirectory(Path.GetDirectoryName(_settingsPath)!);
         File.WriteAllText(_settingsPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
     }
@@ -71,5 +89,13 @@ public sealed class WindowSettingsService
         return virtualScreen.IntersectsWith(windowRect);
     }
 
-    private sealed record WindowSettings(double Width, double Height, double Left, double Top, bool IsMaximized);
+    private sealed class WindowSettings
+    {
+        public double Width { get; set; } = 1360;
+        public double Height { get; set; } = 1000;
+        public double Left { get; set; }
+        public double Top { get; set; }
+        public bool IsMaximized { get; set; }
+        public string? VoicemeeterBananaPath { get; set; }
+    }
 }

@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 
 namespace C4STranscriptPlayer;
@@ -15,7 +17,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         _windowSettings.Apply(this);
-        Closing += (_, _) => _windowSettings.Save(this);
+        Closing += (_, _) => SaveWindowSettings();
         InitializeControls();
         ApplyContext(new AppointmentContext());
         GenerateTranscript();
@@ -24,6 +26,7 @@ public partial class MainWindow : Window
     private void InitializeControls()
     {
         EnvironmentUrlBox.Text = "https://org3c71a034.crm4.dynamics.com/";
+        VoicemeeterPathBox.Text = _windowSettings.LoadVoicemeeterBananaPath() ?? GetDefaultVoicemeeterBananaPath();
         ThemeBox.ItemsSource = _generator.ThemeOptions;
         ThemeBox.SelectedValue = "renewal-risk";
         ToneBox.ItemsSource = new[] { "balanced", "positive", "tense", "recovery" };
@@ -299,6 +302,53 @@ public partial class MainWindow : Window
     {
         var helpWindow = new VoicemeeterHelpWindow { Owner = this };
         helpWindow.Show();
+    }
+
+    private void LaunchVoicemeeterButton_Click(object sender, RoutedEventArgs e)
+    {
+        var path = VoicemeeterPathBox.Text.Trim().Trim('"');
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            StatusText.Text = "Enter the Voicemeeter Banana path before launching the mixer.";
+            return;
+        }
+
+        if (!File.Exists(path))
+        {
+            StatusText.Text = "Voicemeeter Banana was not found at that path.";
+            return;
+        }
+
+        try
+        {
+            Process.Start(new ProcessStartInfo
+            {
+                FileName = path,
+                UseShellExecute = true
+            });
+            _windowSettings.SaveVoicemeeterBananaPath(path);
+            StatusText.Text = "Voicemeeter Banana launch requested. Keep it running before starting playback.";
+        }
+        catch (Exception ex)
+        {
+            StatusText.Text = "Mixer launch failed: " + ex.Message;
+        }
+    }
+
+    private void SaveWindowSettings()
+    {
+        _windowSettings.Save(this, VoicemeeterPathBox.Text.Trim().Trim('"'));
+    }
+
+    private static string GetDefaultVoicemeeterBananaPath()
+    {
+        var candidates = new[]
+        {
+            @"C:\Program Files (x86)\VB\Voicemeeter\voicemeeterpro.exe",
+            @"C:\Program Files\VB\Voicemeeter\voicemeeterpro.exe"
+        };
+
+        return candidates.FirstOrDefault(File.Exists) ?? candidates[0];
     }
 
     private void SetBusy(bool isBusy, string? message = null)
