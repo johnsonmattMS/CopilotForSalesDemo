@@ -68,9 +68,9 @@ public sealed record AudioOutputDevice(int DeviceNumber, string Name)
     public override string ToString() => Name;
 }
 
-public sealed record SpeechVoice(string Name)
+public sealed record SpeechVoice(string Name, string Label, string CultureName, bool IsEnglish)
 {
-    public override string ToString() => Name;
+    public override string ToString() => Label;
 }
 
 public sealed class PlaybackOptions

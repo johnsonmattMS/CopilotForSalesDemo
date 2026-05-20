@@ -9,6 +9,7 @@ The repository includes a ready-to-run Windows build, so most users do not need 
 - Loads an appointment context from Dataverse/D365, or uses built-in sample data.
 - Generates a synthetic seller/customer transcript from the chosen scenario, tone, length, and notes.
 - Shows the generated transcript and follow-up tasks.
+- Allows the generated transcript to be edited before playback.
 - Plays the transcript using two selectable Windows speech voices.
 - Routes seller and customer audio to separate output devices.
 - Supports Voicemeeter Banana, VB-CABLE, and manual audio routing setups.
@@ -110,6 +111,14 @@ Use the left-hand panel to set the demo context:
 
 Click **Generate transcript** after changing scenario details.
 
+The generated transcript is editable. You can change words, rewrite sentences, or add new speaker lines before clicking **Play**. Existing lines use this format:
+
+```text
+00:01:15 Seller Name: Sentence to speak.
+```
+
+New lines can use the same timestamped format, or just `Speaker Name: Sentence to speak.` if you want the app to place the line after the previous one.
+
 ### Audio Routing
 
 Use the right-hand panel to configure playback:
@@ -126,6 +135,8 @@ Use the right-hand panel to configure playback:
 The scenario **Length** dropdown controls the generated transcript timeline: **short** creates a 1 minute conversation, **medium** creates a 5 minute conversation, and **detailed** creates a 10 minute conversation.
 
 Click **Refresh devices** after installing new audio drivers or opening Voicemeeter.
+
+Voice dropdowns show the Windows voice name plus language/accent metadata. English voices are labelled with their English locale, for example `English accent - United Kingdom`. Non-English voices are clearly marked with `NON-ENGLISH` so they are easy to avoid during demos.
 
 ## Saved Local Settings
 

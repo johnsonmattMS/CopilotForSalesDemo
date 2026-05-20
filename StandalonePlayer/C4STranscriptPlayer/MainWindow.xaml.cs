@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace C4STranscriptPlayer;
@@ -274,7 +275,8 @@ public partial class MainWindow : Window
         var progress = new Progress<string>(message => StatusText.Text = message);
         try
         {
-            await _audio.PlayAsync(_currentTranscript, BuildPlaybackOptions(), progress);
+            var playbackTranscript = BuildTranscriptFromEditor();
+            await _audio.PlayAsync(playbackTranscript, BuildPlaybackOptions(), progress);
         }
         catch (OperationCanceledException)
         {
@@ -289,6 +291,93 @@ public partial class MainWindow : Window
             SetBusy(false);
         }
     }
+
+    private TranscriptResult BuildTranscriptFromEditor()
+    {
+        if (_currentTranscript == null) GenerateTranscript();
+        if (_currentTranscript == null) return new TranscriptResult();
+
+        var cues = ParseEditedTranscript(TranscriptBox.Text, _currentTranscript.Cues);
+        return new TranscriptResult
+        {
+            Input = _currentTranscript.Input,
+            ThemeLabel = _currentTranscript.ThemeLabel,
+            Title = _currentTranscript.Title,
+            Summary = _currentTranscript.Summary,
+            Points = _currentTranscript.Points,
+            Decisions = _currentTranscript.Decisions,
+            Risks = _currentTranscript.Risks,
+            Tasks = _currentTranscript.Tasks,
+            Cues = cues.Count > 0 ? cues : _currentTranscript.Cues
+        };
+    }
+
+    private IReadOnlyList<TranscriptCue> ParseEditedTranscript(string transcriptText, IReadOnlyList<TranscriptCue> originalCues)
+    {
+        var cues = new List<TranscriptCue>();
+        var lines = transcriptText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+        var fallbackGap = CalculateFallbackGap(originalCues);
+
+        foreach (var rawEditorLine in lines)
+        {
+            var editorLine = rawEditorLine.Trim();
+            if (string.IsNullOrWhiteSpace(editorLine)) continue;
+
+            var match = TranscriptLineRegex().Match(editorLine);
+            if (!match.Success)
+            {
+                if (cues.Count == 0) continue;
+
+                var previous = cues[^1];
+                var mergedText = previous.Text + " " + editorLine;
+                cues[^1] = new TranscriptCue(previous.Offset, previous.Role, previous.Speaker, mergedText, FormatTranscriptLine(previous.Offset, previous.Speaker, mergedText));
+                continue;
+            }
+
+            var offset = match.Groups["timestamp"].Success
+                ? ParseTranscriptOffset(match.Groups["timestamp"].Value)
+                : cues.Count == 0 ? TimeSpan.Zero : cues[^1].Offset + fallbackGap;
+            var speaker = match.Groups["speaker"].Value.Trim();
+            var text = match.Groups["text"].Value.Trim();
+            var role = DetermineSpeakerRole(speaker, cues.Count > 0 ? cues[^1].Role : null, originalCues);
+
+            cues.Add(new TranscriptCue(offset, role, speaker, text, FormatTranscriptLine(offset, speaker, text)));
+        }
+
+        return cues;
+    }
+
+    private SpeakerRole DetermineSpeakerRole(string speaker, SpeakerRole? previousRole, IReadOnlyList<TranscriptCue> originalCues)
+    {
+        if (string.Equals(speaker, SellerNameBox.Text.Trim(), StringComparison.OrdinalIgnoreCase)) return SpeakerRole.Seller;
+        if (string.Equals(speaker, CustomerNameBox.Text.Trim(), StringComparison.OrdinalIgnoreCase)) return SpeakerRole.Customer;
+
+        var originalCue = originalCues.FirstOrDefault(cue => string.Equals(cue.Speaker, speaker, StringComparison.OrdinalIgnoreCase));
+        if (originalCue != null) return originalCue.Role;
+
+        return previousRole == SpeakerRole.Seller ? SpeakerRole.Customer : SpeakerRole.Seller;
+    }
+
+    private static TimeSpan CalculateFallbackGap(IReadOnlyList<TranscriptCue> cues)
+    {
+        if (cues.Count < 2) return TimeSpan.FromSeconds(10);
+
+        var totalSeconds = Math.Max(1, cues[^1].Offset.TotalSeconds - cues[0].Offset.TotalSeconds);
+        return TimeSpan.FromSeconds(Math.Max(5, totalSeconds / Math.Max(1, cues.Count - 1)));
+    }
+
+    private static TimeSpan ParseTranscriptOffset(string timestamp)
+    {
+        return TimeSpan.TryParse(timestamp, out var offset) ? offset : TimeSpan.Zero;
+    }
+
+    private static string FormatTranscriptLine(TimeSpan offset, string speaker, string text)
+    {
+        return $"{(int)offset.TotalHours:00}:{offset.Minutes:00}:{offset.Seconds:00} {speaker}: {text}";
+    }
+
+    [GeneratedRegex("^(?:(?<timestamp>\\d{1,2}:\\d{2}:\\d{2})\\s+)?(?<speaker>[^:]+):\\s*(?<text>.+)$")]
+    private static partial Regex TranscriptLineRegex();
 
     private void StopButton_Click(object sender, RoutedEventArgs e)
     {

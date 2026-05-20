@@ -1,4 +1,5 @@
 using System.IO;
+using System.Globalization;
 using System.Speech.Synthesis;
 using NAudio.Wave;
 
@@ -25,9 +26,42 @@ public sealed class AudioPlaybackService
         using var synth = new SpeechSynthesizer();
         return synth.GetInstalledVoices()
             .Where(voice => voice.Enabled)
-            .Select(voice => new SpeechVoice(voice.VoiceInfo.Name))
+            .Select(voice => new SpeechVoice(voice.VoiceInfo.Name, BuildVoiceLabel(voice.VoiceInfo), voice.VoiceInfo.Culture.Name, IsEnglishVoice(voice.VoiceInfo.Culture)))
             .OrderBy(voice => voice.Name, StringComparer.OrdinalIgnoreCase)
             .ToList();
+    }
+
+    private static string BuildVoiceLabel(VoiceInfo voiceInfo)
+    {
+        var culture = voiceInfo.Culture;
+        if (!IsEnglishVoice(culture))
+        {
+            return $"{voiceInfo.Name} [NON-ENGLISH - {culture.EnglishName}]";
+        }
+
+        var accentLabel = GetEnglishAccentLabel(culture);
+        return $"{voiceInfo.Name} [English accent - {accentLabel}]";
+    }
+
+    private static bool IsEnglishVoice(CultureInfo culture)
+    {
+        return string.Equals(culture.TwoLetterISOLanguageName, "en", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string GetEnglishAccentLabel(CultureInfo culture)
+    {
+        return culture.Name switch
+        {
+            "en-US" => "United States",
+            "en-GB" => "United Kingdom",
+            "en-AU" => "Australia",
+            "en-CA" => "Canada",
+            "en-IN" => "India",
+            "en-IE" => "Ireland",
+            "en-NZ" => "New Zealand",
+            "en-ZA" => "South Africa",
+            _ => culture.EnglishName.Replace("English (", "", StringComparison.Ordinal).TrimEnd(')')
+        };
     }
 
     public void Stop()
