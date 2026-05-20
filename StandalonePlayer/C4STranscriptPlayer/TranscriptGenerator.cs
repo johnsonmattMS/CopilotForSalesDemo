@@ -76,7 +76,8 @@ public sealed class TranscriptGenerator
 
     private static IReadOnlyList<TranscriptCue> BuildConversation(TranscriptInput input, Theme theme)
     {
-        var detail = input.Length == "detailed" ? 34 : input.Length == "medium" ? 28 : 22;
+        var targetDuration = GetTargetDuration(input.Length);
+        var targetLineCount = GetTargetLineCount(input.Length);
         var opener = input.Tone == "tense" ? "I want to be direct about the concerns on our side." : "Thanks for making the time today.";
         var reassurance = input.Tone == "positive" ? "That gives us a strong basis to move quickly." : input.Tone == "recovery" ? "We can recover confidence if we make the next steps concrete." : "That makes sense, and we can make the next step more specific.";
 
@@ -118,13 +119,69 @@ public sealed class TranscriptGenerator
             (SpeakerRole.Seller, input.SellerName, "Thank you. We will keep it focused, measurable, and easy for your stakeholders to act on.")
         };
 
-        return lines.Take(detail).Select((line, index) =>
+        ExtendConversation(lines, input, theme, targetLineCount);
+        var selectedLines = SelectLinesForLength(lines, input.Length, targetLineCount);
+
+        return selectedLines.Select((line, index) =>
         {
-            var elapsedSeconds = Math.Min(95, (int)Math.Round(index * (95.0 / Math.Max(1, detail - 1))));
+            var elapsedSeconds = (int)Math.Round(index * (targetDuration.TotalSeconds / Math.Max(1, selectedLines.Count - 1)));
             var offset = TimeSpan.FromSeconds(elapsedSeconds);
-            var rawLine = $"00:{offset.Minutes:00}:{offset.Seconds:00} {line.Speaker}: {line.Text}";
+            var rawLine = $"{(int)offset.TotalHours:00}:{offset.Minutes:00}:{offset.Seconds:00} {line.Speaker}: {line.Text}";
             return new TranscriptCue(offset, line.Role, line.Speaker, line.Text, rawLine);
         }).ToList();
+    }
+
+    private static TimeSpan GetTargetDuration(string length)
+    {
+        return length switch
+        {
+            "short" => TimeSpan.FromMinutes(1),
+            "detailed" => TimeSpan.FromMinutes(10),
+            _ => TimeSpan.FromMinutes(5)
+        };
+    }
+
+    private static int GetTargetLineCount(string length)
+    {
+        return length switch
+        {
+            "short" => 10,
+            "detailed" => 84,
+            _ => 42
+        };
+    }
+
+    private static IReadOnlyList<(SpeakerRole Role, string Speaker, string Text)> SelectLinesForLength(List<(SpeakerRole Role, string Speaker, string Text)> lines, string length, int targetLineCount)
+    {
+        if (length != "short") return lines.Take(targetLineCount).ToList();
+
+        return lines.Take(Math.Max(0, targetLineCount - 2))
+            .Concat(lines.TakeLast(2))
+            .ToList();
+    }
+
+    private static void ExtendConversation(List<(SpeakerRole Role, string Speaker, string Text)> lines, TranscriptInput input, Theme theme, int targetLineCount)
+    {
+        var detailRounds = 1;
+        while (lines.Count < targetLineCount)
+        {
+            var point = PersonalizeCustomerText(theme.Points[detailRounds % theme.Points.Length], input.CustomerAccountName);
+            var risk = PersonalizeCustomerText(theme.Risks[detailRounds % theme.Risks.Length], input.CustomerAccountName);
+            var task = theme.Tasks[detailRounds % theme.Tasks.Length].ToLowerInvariant();
+
+            lines.Add((SpeakerRole.Customer, input.CustomerName, $"Before we close that point, I want to test the practical impact for {input.CustomerAccountName}. {point}"));
+            lines.Add((SpeakerRole.Seller, input.SellerName, "That is a fair test. I would split the impact into what users see immediately, what managers can measure, and what leaders can use to make the next decision."));
+            lines.Add((SpeakerRole.Customer, input.CustomerName, $"The leadership angle matters because {risk.ToLowerInvariant()}"));
+            lines.Add((SpeakerRole.Seller, input.SellerName, $"Then the follow-up should make that visible. I will include a short owner map, the decision criteria, and the specific evidence behind {task}."));
+            lines.Add((SpeakerRole.Customer, input.CustomerName, "Can you make the evidence specific enough that I do not have to translate it for every stakeholder group?"));
+            lines.Add((SpeakerRole.Seller, input.SellerName, "Yes. I will write it in three layers: an executive summary, an operational view, and a simple dependency list for the delivery team."));
+            lines.Add((SpeakerRole.Customer, input.CustomerName, "That would help. The other thing I need is a clear view of what happens if we wait another month."));
+            lines.Add((SpeakerRole.Seller, input.SellerName, "I can add a delay impact section that shows the cost of waiting, the risk to adoption momentum, and the decisions that would become harder later."));
+            lines.Add((SpeakerRole.Customer, input.CustomerName, "Good. If we can keep that balanced and factual, it will make the internal conversation easier."));
+            lines.Add((SpeakerRole.Seller, input.SellerName, "Agreed. I will keep the tone practical: clear trade-offs, named owners, and a next step that does not create unnecessary work for your team."));
+
+            detailRounds++;
+        }
     }
 
     private static string PersonalizeCustomerText(string value, string customerAccountName)

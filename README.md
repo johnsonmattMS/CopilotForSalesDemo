@@ -123,6 +123,8 @@ Use the right-hand panel to configure playback:
 - **Start delay**: waits before playback starts, useful when switching into Teams.
 - **Speak short speaker-name cues**: adds short spoken cues before speaker turns.
 
+The scenario **Length** dropdown controls the generated transcript timeline: **short** creates a 1 minute conversation, **medium** creates a 5 minute conversation, and **detailed** creates a 10 minute conversation.
+
 Click **Refresh devices** after installing new audio drivers or opening Voicemeeter.
 
 ## Saved Local Settings
